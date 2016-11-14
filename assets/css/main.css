@@ -106,22 +106,23 @@ nav ul li.active a, nav ul li a:hover {
 	-khtml-opacity: .50;
 	-moz-opacity: .50;
 }
+#container, #content, .overflow-container, .hide-left-content,
+.left-content, .right-content {
+	height: 80vh;
+	min-height: 391px;
+}
 #container {
 	padding: 25px 20px;
-	height: 391px;
 	width: 100%;
-	background: url(../img/content_bg.png);
-	background-repeat: repeat-x;
+	background-color: white;
 }
 #content {
 	max-width: 944px;
 	width: 80%;
-	height: 391px;
 	margin: 0 auto;
 }
 .overflow-container {
 	overflow: auto;
-	height: 391px;
 }
 span.grey {
 	color: #bcbcbc;
@@ -133,34 +134,32 @@ span.pink {
 	color: #ce8bb9;
 }
 .hide-left-content {
-	height: 391px;
 	overflow-x: auto;
 	overflow-y: hidden;
 }
 .left-content {
-	width: 321px;
-	height: 391px;
+	max-width: 321px;
 	float: left;
 	border-right: 1px solid #e9e9e9;
 }
 .picture-and-label {
 	height: 104px;
-	margin-top: 136px;
+	margin-top: 60px;
 }
 .picture-not-label {
-	width: 82px;
-	height: 90px;
 	padding: 7px;
-	background: url(../img/about_portrait_frame.png);
 	float: left;
 }
 .picture-not-label img {
-	width: 82px;
-	height: 90px;
+	max-width: 210px;
+	max-height: 210px;
+	width: 11vw;
+	height: 11vw;
+	border: 2px groove #ababab;
+	padding: 2px;
 }
 .label-not-picture {
-	width: 211px;
-	float: right;
+	max-width: 211px;
 	padding-left: 12px;
 	padding-top: 25px;
 }
@@ -184,11 +183,11 @@ span.pink {
 }
 .right-content {
 	max-width: 540px;
-	height: 391px;
 	float: right;
 	padding-left: 30px;
 	padding-right: 45px;
-	margin-right: 7px;
+	margin-right: auto;
+	margin-left: auto;
 	overflow: auto;
 }
 h1, h2, h3, h4, h5, h6 {
