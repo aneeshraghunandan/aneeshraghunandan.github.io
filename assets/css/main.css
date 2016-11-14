@@ -58,9 +58,7 @@ header {
 	height: 44px;
 }
 nav {
-	width: 600px;
 	position: absolute;
-	right: 0px;
 	bottom: 0px;
 }
 nav ul {
@@ -68,7 +66,7 @@ nav ul {
 }
 nav ul li {
 	float: left;
-	padding-left: 36px;
+	padding-left: 60px;
 }
 nav ul li.active a {
 	background: url(../img/navigation_arrow.png);
@@ -134,6 +132,11 @@ span.blue {
 span.pink {
 	color: #ce8bb9;
 }
+.hide-left-content {
+	height: 391px;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
 .left-content {
 	width: 321px;
 	height: 391px;
@@ -180,7 +183,7 @@ span.pink {
 	margin-top: -6px;
 }
 .right-content {
-	width: 540px;
+	max-width: 540px;
 	height: 391px;
 	float: right;
 	padding-left: 30px;
