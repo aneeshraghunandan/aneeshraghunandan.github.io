@@ -270,6 +270,6 @@ table tbody tr td {
 	padding: 5px 7px;
 	color: #787878;
 }
-h2 > a {
+h2.article-header > a, h2.article-header > a:active, h2.article-header > a:visited, h2.article-header {
 	font-weight: normal;
 }
