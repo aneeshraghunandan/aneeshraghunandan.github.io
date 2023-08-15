@@ -63,6 +63,7 @@ nav {
 }
 nav ul {
 	margin-bottom: -2px;
+	padding-bottom: 0px;
 }
 nav ul li {
 	float: left;
