@@ -117,7 +117,7 @@ nav ul li.active a, nav ul li a:hover {
 	background-color: white;
 }
 #content {
-	max-width: 944px;
+	max-width: 1500px;
 	width: 80%;
 	margin: 0 auto;
 }
@@ -125,6 +125,7 @@ nav ul li.active a, nav ul li a:hover {
 	overflow: auto;
 	padding: 0 50px;
 }
+
 span.grey {
 	color: #bcbcbc;
 }
@@ -194,7 +195,7 @@ span.pink {
 h1, h2, h3, h4, h5, h6 {
 	font-family: 'Yanone Kaffeesatz', Arial, sans-serif;
 	font-weight: lighter;
-	padding: 5px 0px;
+	padding: 10px 0px;
 }
 h1 {
 	font-size: 28px;
@@ -230,10 +231,18 @@ p {
 	padding-bottom: 20px;
 }
 .right-content ul li {
-	font-size: 14px;
 	color: #828282;
 	line-height: 20px;
 }
+
+ul li {
+	font-size: 14px;
+}
+
+ul {
+	padding-bottom: 10px;
+}
+
 .contact-info {
 	padding-bottom: 3px;
 	font-size: 15px;
