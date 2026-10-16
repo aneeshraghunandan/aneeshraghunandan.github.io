@@ -83,7 +83,9 @@ nav ul li.active a, nav ul li a:hover {
 	max-width: 210px;
 	max-height: 210px;
 	width: 11vw;
-	height: 11vw;
+	height: auto;
+	aspect-ratio: 1;
+	object-fit: cover;
 	border: 2px groove #ababab;
 	padding: 2px;
 }
@@ -184,4 +186,68 @@ ul {
 }
 h2.article-header > a, h2.article-header > a:active, h2.article-header > a:visited, h2.article-header {
 	font-weight: normal;
+}
+
+/* Phones: single column that scrolls with the page, photo and name first. */
+@media (max-width: 719px) {
+	#container, #content, .overflow-container, .hide-left-content,
+	.left-content, .right-content {
+		height: auto;
+		min-height: 0;
+	}
+	#content {
+		width: auto;
+	}
+	.overflow-container {
+		padding: 0;
+	}
+	/* .left-content follows .right-content in the DOM; show it first. */
+	.hide-left-content {
+		display: flex;
+		flex-direction: column-reverse;
+		overflow: visible;
+	}
+	.left-content, .right-content {
+		float: none;
+		max-width: none;
+	}
+	.left-content {
+		border-right: 0;
+	}
+	.right-content {
+		padding: 0;
+		overflow: visible;
+	}
+	/* Name sits beside the photo, or wraps below it when there is no room. */
+	.picture-and-label {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		height: auto;
+		margin-top: 0;
+	}
+	.picture-not-label {
+		float: none;
+		padding: 0;
+	}
+	.picture-not-label img {
+		width: min(160px, 40vw);
+		max-height: none;
+	}
+	.label-not-picture {
+		flex: 1 1 150px;
+		padding-top: 0;
+	}
+	.label-not-picture h1 {
+		font-size: 24px;
+	}
+	/* Keep contact values in a column beside their label instead of wrapping under it. */
+	.info {
+		float: none;
+		display: flow-root;
+		overflow-wrap: anywhere;
+	}
+	nav ul li {
+		padding-left: 20px;
+	}
 }
