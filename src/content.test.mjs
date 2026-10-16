@@ -5,7 +5,7 @@ import { validateSite } from './content.mjs';
 import { escapeHtml, renderPage } from './template.mjs';
 
 const site = JSON.parse(await readFile(new URL('../content/site.json', import.meta.url), 'utf8'));
-const assets = { css: '/a.css', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com' };
+const assets = { styles: 'p{}', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com' };
 
 test('the committed site.json is valid', () => {
 	validateSite(site);
@@ -21,6 +21,12 @@ test('a misspelled field is rejected', () => {
 	const broken = structuredClone(site);
 	broken.working_papers[0].coauthor = broken.working_papers[0].coauthors;
 	assert.throws(() => validateSite(broken), /working_papers\[0\]\.coauthor is not a known field/);
+});
+
+test('photo files must name their width', () => {
+	assert.throws(() => validateSite({ ...site, photo: ['assets/img/me.webp'] }), /photo\[0\] must end in -<width/);
+	const html = renderPage(site, assets, 'about');
+	assert.ok(html.includes('srcset="/assets/img/aneeshprofile-180.webp 180w, /assets/img/aneeshprofile-270.webp 270w, /assets/img/aneeshprofile-360.webp 360w"'));
 });
 
 test('plain fields are escaped, _html fields are not', () => {

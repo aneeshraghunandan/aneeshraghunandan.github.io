@@ -1,4 +1,4 @@
-// Builds the site into _site/: renders a page per tab (index.html, research/, cv/) and 404.html from content/site.json, minifies CSS/JS with hashed names, copies static files.
+// Builds the site into _site/: renders a page per tab (index.html, research/, cv/) and 404.html from content/site.json, inlines minified CSS, bundles JS with a hashed name, copies static files.
 import { createHash } from 'node:crypto';
 import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -24,7 +24,7 @@ async function readSite() {
 		throw new Error(`content/site.json is not valid JSON: ${error.message}`);
 	}
 	validateSite(site);
-	for (const [field, file] of [['photo', site.photo], ['cv.file', site.cv.file]]) {
+	for (const [field, file] of [...site.photo.map((file, i) => [`photo[${i}]`, file]), ['cv.file', site.cv.file]]) {
 		await access(file).catch(() => {
 			throw new Error(`content/site.json: ${field} points to "${file}", which does not exist`);
 		});
@@ -62,7 +62,8 @@ async function build() {
 	const site = await readSite();
 	await rm(OUT, { recursive: true, force: true });
 	const assets = {
-		css: await writeHashed('assets/css', 'site', 'css', await minify(CSS_FILES, 'css')),
+		// Inlined into each page: at ~5 KB it costs less than a render-blocking request.
+		styles: await minify(CSS_FILES, 'css'),
 		js: await writeHashed('assets/js', 'script', 'js', await bundleJs(JS_FILE)),
 		favicon: '/assets/favicon.png',
 		cv: CV_URL,
@@ -70,13 +71,13 @@ async function build() {
 	};
 	await Promise.all(STATIC_FILES.map((file) => copyTo(file, file)));
 	// After STATIC_FILES, since the photo may sit inside assets/img and parallel copies of one file can race.
-	await Promise.all([copyTo(site.photo, site.photo), copyTo(site.cv.file, CV_URL)]);
+	await Promise.all([...site.photo.map((file) => copyTo(file, file)), copyTo(site.cv.file, CV_URL)]);
 	const pages = [...TABS.map(({ id, path }) => [id, `${path}index.html`]), ['not-found', '/404.html']];
 	await Promise.all(pages.map(async ([page, file]) => {
 		await mkdir(dirname(join(OUT, file)), { recursive: true });
 		await writeFile(join(OUT, file), renderPage(site, assets, page));
 	}));
-	console.log(`Built ${OUT}/ (${pages.map(([, file]) => file.slice(1)).join(', ')}, ${assets.css}, ${assets.js})`);
+	console.log(`Built ${OUT}/ (${pages.map(([, file]) => file.slice(1)).join(', ')}, inline CSS, ${assets.js})`);
 }
 
 build().catch((error) => {

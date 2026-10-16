@@ -68,7 +68,11 @@ export function validateSite(site) {
 	checkString(site.email, 'email');
 	if (!/^[^@\s]+@[^@\s]+$/.test(site.email)) fail('email', 'must look like name@example.edu');
 	checkStringList(site.address, 'address');
-	checkString(site.photo, 'photo');
+	// The same square photo at several pixel widths, for srcset; each file name ends in -<width>.<ext>.
+	checkStringList(site.photo, 'photo');
+	site.photo.forEach((file, i) => {
+		if (!/-\d+\.\w+$/.test(file)) fail(`photo[${i}]`, 'must end in -<width in pixels>, like "me-360.webp"');
+	});
 	checkStringList(site.about_html, 'about_html');
 	checkString(site.interests, 'interests');
 	checkPaperList(site.publications, 'publications', checkPublication);

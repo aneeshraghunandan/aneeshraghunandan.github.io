@@ -33,11 +33,19 @@ function renderWorkingPaper(paper) {
 	return `\t\t\t\t\t\t\t<h2 class="article-header">${renderTitle(paper)}</h2>${renderNotes([...status, ...(paper.notes_html ?? [])])}`;
 }
 
+// Shown at min(180px, 40vw) by main.css; srcset lets each screen fetch the smallest file that stays sharp.
+function renderPhoto(files, isActive) {
+	const sized = files.map((file) => ({ url: `/${esc(file)}`, width: Number(file.match(/-(\d+)\.\w+$/)[1]) })).sort((a, b) => a.width - b.width);
+	const largest = sized.at(-1);
+	const srcset = sized.map(({ url, width }) => `${url} ${width}w`).join(', ');
+	return `<img src="${largest.url}" srcset="${srcset}" sizes="(max-width: 450px) 40vw, 180px" width="${largest.width}" height="${largest.width}"${isActive ? ' fetchpriority="high"' : ''}`;
+}
+
 function renderAbout(site, attrs) {
 	const [user, domain] = site.email.split('@');
 	return `\t\t\t\t\t<div id="about"${attrs}>
 \t\t\t\t\t\t<div class="picture-and-label">
-\t\t\t\t\t\t\t<div class="picture-not-label"><img src="/${esc(site.photo)}" width="360" height="360" alt="${esc(site.name.first)} Profile Picture"></div>
+\t\t\t\t\t\t\t<div class="picture-not-label">${renderPhoto(site.photo, !attrs)} alt="${esc(site.name.first)} Profile Picture"></div>
 \t\t\t\t\t\t\t<div class="label-not-picture">
 \t\t\t\t\t\t\t\t<h1><span>${esc(site.name.first)}</span> ${esc(site.name.last)}</h1>
 \t\t\t\t\t\t\t</div>
@@ -118,7 +126,7 @@ function renderNav(active, name) {
 
 /**
  * Returns the full HTML for one page: `page` is a tab id from TABS, shown as the active tab, or
- * 'not-found' for 404.html (About, with a note). `assets` holds the origin and css/js/favicon/cv URLs.
+ * 'not-found' for 404.html (About, with a note). `assets` holds the origin, the minified CSS and the js/favicon/cv URLs.
  */
 export function renderPage(site, assets, page) {
 	const name = `${site.name.first} ${site.name.last}`;
@@ -140,7 +148,8 @@ export function renderPage(site, assets, page) {
 		<meta name="description" content="${fullName} Profile Page">
 		<meta name="author" content="${fullName}">${head}
 		<link rel="shortcut icon" href="${esc(assets.favicon)}">
-		<link rel="stylesheet" href="${esc(assets.css)}">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<style>${assets.styles}</style>
 		<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fee90e9283e944498cf8e6d19bdf5bcc"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body class="gray pattern-1">
