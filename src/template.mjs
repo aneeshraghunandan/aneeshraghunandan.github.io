@@ -70,26 +70,35 @@ ${site.working_papers.map(renderWorkingPaper).join('\n')}
 \t\t\t\t\t</div>`;
 }
 
-function renderCv(site) {
+// "2026-08" -> "August 2026".
+function monthYear(updated) {
+	const [year, month] = updated.split('-').map(Number);
+	return new Date(Date.UTC(year, month - 1)).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+}
+
+function renderCv(site, cvUrl) {
+	const pdf = esc(cvUrl);
+	const downloadName = esc(cvUrl.split('/').pop().replace(/\.pdf$/, `_${site.cv.updated}.pdf`));
 	return `\t\t\t\t\t<div id="cv">
 \t\t\t\t\t\t<div class="cv-card">
 \t\t\t\t\t\t\t<div>
 \t\t\t\t\t\t\t\t<h1>Curriculum Vitae</h1>
+\t\t\t\t\t\t\t\t<p>Updated ${esc(monthYear(site.cv.updated))}</p>
 \t\t\t\t\t\t\t\t<p>PDF. Open it in a new tab or save a copy.</p>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t\t<div class="cv-card__actions">
-\t\t\t\t\t\t\t\t<a class="button button--primary" href="${esc(site.cv.file)}" target="_blank" rel="noopener">View</a>
-\t\t\t\t\t\t\t\t<a class="button" href="${esc(site.cv.file)}" download>Download</a>
+\t\t\t\t\t\t\t\t<a class="button button--primary" href="${pdf}" target="_blank" rel="noopener">View</a>
+\t\t\t\t\t\t\t\t<a class="button" href="${pdf}" download="${downloadName}">Download</a>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t</div>
 \t\t\t\t\t\t<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
-\t\t\t\t\t\t<div class="cv-pages" id="cv-pages">
+\t\t\t\t\t\t<div class="cv-pages" id="cv-pages" data-pdf="${pdf}" data-download="${downloadName}">
 \t\t\t\t\t\t\t<p class="cv-pages__status">Loading CV pages...</p>
 \t\t\t\t\t\t</div>
 \t\t\t\t\t</div>`;
 }
 
-/** Returns the full index.html. `assets` holds the hashed css/js/favicon URLs. */
+/** Returns the full index.html. `assets` holds the css/js/favicon/cv URLs. */
 export function renderPage(site, assets) {
 	const fullName = esc(`${site.name.first} ${site.name.last}`);
 	return `<!DOCTYPE html>
@@ -119,7 +128,7 @@ export function renderPage(site, assets) {
 				<div id="content">
 ${renderAbout(site)}
 ${renderResearch(site)}
-${renderCv(site)}
+${renderCv(site, assets.cv)}
 				</div>
 			</div>
 			<footer>

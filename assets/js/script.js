@@ -6,10 +6,11 @@ let cvRequested = false;
 // Loads PDF.js only when the CV tab first opens, then draws every page of the CV.
 async function renderCv() {
 	const box = document.getElementById('cv-pages');
+	const { pdf: pdfUrl, download } = box.dataset;
 	try {
 		const pdfjs = await import(`${PDFJS}/pdf.min.mjs`);
 		pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS}/pdf.worker.min.mjs`;
-		const pdf = await pdfjs.getDocument('assets/cv.pdf').promise;
+		const pdf = await pdfjs.getDocument(pdfUrl).promise;
 		// Sized for the column at render time; wider later resizes are CSS-scaled.
 		const cssWidth = Math.min(800, box.clientWidth);
 		box.replaceChildren();
@@ -26,7 +27,8 @@ async function renderCv() {
 			await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
 		}
 	} catch {
-		box.innerHTML = '<p>The CV pages could not be shown here. <a href="assets/cv.pdf" target="_blank" rel="noopener">View the PDF</a> or <a href="assets/cv.pdf" download>download it</a>.</p>';
+		// pdfUrl and download come from the build (fixed path and a validated date), not from visitors.
+		box.innerHTML = `<p>The CV pages could not be shown here. <a href="${pdfUrl}" target="_blank" rel="noopener">View the PDF</a> or <a href="${pdfUrl}" download="${download}">download it</a>.</p>`;
 	}
 }
 

@@ -11,6 +11,8 @@ const OUT = '_site';
 const CSS_FILES = ['assets/css/font_Yanone_Kaffeesatz.css', 'assets/css/reset.css', 'assets/css/main.css'];
 const JS_FILE = 'assets/js/script.js';
 const STATIC_FILES = ['CNAME', 'assets/favicon.png', 'assets/img'];
+// Stable public URL for the CV, whatever site.json's cv.file is called.
+const CV_URL = '/Aneesh_Raghunandan_CV.pdf';
 
 async function readSite() {
 	const text = await readFile('content/site.json', 'utf8');
@@ -56,10 +58,11 @@ async function build() {
 		css: await writeHashed('assets/css', 'site', 'css', await minify(CSS_FILES, 'css')),
 		js: await writeHashed('assets/js', 'script', 'js', await minify([JS_FILE], 'js')),
 		favicon: 'assets/favicon.png',
+		cv: CV_URL,
 	};
 	await Promise.all(STATIC_FILES.map((file) => copyTo(file, file)));
 	// After STATIC_FILES, since the photo may sit inside assets/img and parallel copies of one file can race.
-	await Promise.all([site.photo, site.cv.file].map((file) => copyTo(file, file)));
+	await Promise.all([copyTo(site.photo, site.photo), copyTo(site.cv.file, CV_URL)]);
 	await writeFile(join(OUT, 'index.html'), renderPage(site, assets));
 	console.log(`Built ${OUT}/ (index.html, ${assets.css}, ${assets.js})`);
 }

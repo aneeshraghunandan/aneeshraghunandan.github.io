@@ -73,6 +73,8 @@ export function validateSite(site) {
 	checkString(site.interests, 'interests');
 	checkPaperList(site.publications, 'publications', checkPublication);
 	checkPaperList(site.working_papers, 'working_papers', checkWorkingPaper);
-	checkKeys(site.cv, 'cv', ['file']);
+	checkKeys(site.cv, 'cv', ['file', 'updated']);
 	checkString(site.cv.file, 'cv.file');
+	checkString(site.cv.updated, 'cv.updated');
+	if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(site.cv.updated)) fail('cv.updated', 'must be year-month like "2026-08"');
 }

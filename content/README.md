@@ -39,7 +39,12 @@ The live site keeps the previous version until the error is fixed.
 
 ## Updating the CV
 
-Replace `assets/cv.pdf` with the new PDF (keep the file name).
+1. Upload the new PDF over `content/cv.pdf` (keep that file name).
+2. In `content/site.json`, set `cv.updated` to the year and month, e.g. `"2026-08"`.
+
+The site always serves the CV at `/Aneesh_Raghunandan_CV.pdf`, so links to it keep
+working. `updated` sets the "Updated August 2026" line on the CV tab and the
+downloaded file name (`Aneesh_Raghunandan_CV_2026-08.pdf`).
 
 ## Building locally
 
