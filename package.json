@@ -1,0 +1,14 @@
+{
+  "name": "aneeshraghunandan-site",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "npm run build && esbuild --servedir=_site --serve=8000",
+    "test": "node --test src/*.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
