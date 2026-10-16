@@ -42,14 +42,18 @@ Replace [`content/cv.pdf`](content/cv.pdf) with the new PDF, keeping the file na
 
 The "Updated" month comes from the date stored inside the PDF: its modification
 date, or its creation date if it has none. LaTeX, Word and most PDF exporters set
-this when the file is made. If the month shown is wrong, or the build fails because
-the PDF has no date, override it in [`content/site.json`](content/site.json):
+this when the file is made. The build only reads a date written as plain text in
+the PDF; if the file keeps its date only in compressed or XMP metadata (some
+online converters and PDF editors do this), the build stops and the Actions log
+asks for `cv.updated`. If the month shown is wrong, or the build fails because the
+PDF has no readable date, override it in [`content/site.json`](content/site.json):
 
 ```json
 "cv": { "file": "content/cv.pdf", "updated": "2026-08" }
 ```
 
-Remove `updated` again with the next CV upload, or it keeps overriding the PDF's date.
+An override wins over every later PDF until it is removed, so delete `updated`
+again with the next CV upload.
 
 The site always serves the CV at `/Aneesh_Raghunandan_CV.pdf`, so links to it keep
 working. The month sets the "Updated August 2026" line on the CV tab and the

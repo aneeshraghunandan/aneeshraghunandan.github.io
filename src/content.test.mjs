@@ -5,8 +5,8 @@ import { pdfMonth, validateSite } from './content.mjs';
 import { escapeHtml, photoWidths, renderPage } from './template.mjs';
 
 const site = JSON.parse(await readFile(new URL('../content/site.json', import.meta.url), 'utf8'));
-// build.mjs fills cv.updated from the PDF when site.json leaves it out.
-site.cv.updated ??= '2026-08';
+// As in build.mjs: cv.updated falls back to the date inside the committed PDF.
+site.cv.updated ??= pdfMonth(await readFile(new URL(`../${site.cv.file}`, import.meta.url)));
 const photo = [180, 270, 360].map((width) => ({ url: `/assets/img/photo-${width}.abc.webp`, width, height: width }));
 const assets = { styles: 'p{}', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com', photo };
 
