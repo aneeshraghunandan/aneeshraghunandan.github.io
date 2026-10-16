@@ -1,21 +1,13 @@
-# aneeshraghunandan.com
+# Editing the site
 
-Source for www.aneeshraghunandan.com. There are three things to update: the page
-text (`content/site.json`), the CV PDF (`content/cv.pdf`) and the photo
-(`content/photo.jpg`). Each is a single file in `content/`; edit or replace it on
-GitHub and commit to `master`.
-
-> **One-time setup after this change is merged:** the repo owner must open
-> **Settings > Pages > Build and deployment > Source** and choose **GitHub Actions**.
-> Until then GitHub keeps serving the repository files as they are, and the live
-> site will have no `index.html`.
+There are three things to update: the page text ([`content/site.json`](content/site.json)),
+the CV ([`content/cv.pdf`](content/cv.pdf)) and the photo ([`content/photo.jpg`](content/photo.jpg)).
+Each commit to `master` rebuilds and publishes the site through
+[`pages.yml`](.github/workflows/pages.yml); the [Actions tab](../../actions) shows progress and any error.
 
 ## Updating the text
 
-All page text lives in `content/site.json`. Edit it on GitHub (open the file, click
-the pencil icon, then "Commit changes"). Each commit to `master` rebuilds and
-publishes the site through `.github/workflows/pages.yml`; the Actions tab shows
-progress and any error.
+All page text lives in [`content/site.json`](content/site.json).
 
 ### site.json rules
 
@@ -46,8 +38,7 @@ The live site keeps the previous version until the error is fixed.
 
 ## Updating the CV (PDF)
 
-1. On GitHub, open `content/`, choose "Add file > Upload files" and upload the new
-   PDF named `cv.pdf` so it replaces the old one.
+1. Replace [`content/cv.pdf`](content/cv.pdf) with the new PDF, keeping the file name.
 2. In `content/site.json`, set `cv.updated` to the year and month, e.g. `"2026-08"`.
 
 The site always serves the CV at `/Aneesh_Raghunandan_CV.pdf`, so links to it keep
@@ -56,8 +47,7 @@ downloaded file name (`Aneesh_Raghunandan_CV_2026-08.pdf`).
 
 ## Changing the photo
 
-On GitHub, open `content/`, choose "Add file > Upload files" and upload the new
-photo named `photo.jpg` so it replaces the old one. A square image at
+Replace [`content/photo.jpg`](content/photo.jpg) with the new photo, keeping the file name. A square image at
 least 360 pixels wide works best; the build makes the smaller sizes.
 
 ## Building locally
