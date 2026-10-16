@@ -84,20 +84,20 @@ function renderCv(site, cvUrl) {
 \t\t\t\t\t\t\t<div>
 \t\t\t\t\t\t\t\t<h1>Curriculum Vitae</h1>
 \t\t\t\t\t\t\t\t<p>Updated ${esc(monthYear(site.cv.updated))}</p>
-\t\t\t\t\t\t\t\t<p>PDF. Open it in a new tab or save a copy.</p>
 \t\t\t\t\t\t\t</div>
-\t\t\t\t\t\t\t<div class="cv-card__actions">
-\t\t\t\t\t\t\t\t<a class="button" href="${pdf}" target="_blank" rel="noopener">View</a>
-\t\t\t\t\t\t\t\t<a class="button" href="${pdf}" download="${downloadName}">Download</a>
-\t\t\t\t\t\t\t</div>
+\t\t\t\t\t\t\t<p class="cv-card__links">
+\t\t\t\t\t\t\t\t<a class="cv-card__link" href="${pdf}" target="_blank" rel="noopener">View PDF</a>
+\t\t\t\t\t\t\t\t<span aria-hidden="true">&middot;</span>
+\t\t\t\t\t\t\t\t<a class="cv-card__link" href="${pdf}" download="${downloadName}">Download</a>
+\t\t\t\t\t\t\t</p>
 \t\t\t\t\t\t</div>
 \t\t\t\t\t\t<div class="cv-viewer">
 \t\t\t\t\t\t\t<!-- script.js shows the zoom bar once the PDF loads. -->
 \t\t\t\t\t\t\t<div class="cv-zoom" id="cv-zoom" role="group" aria-label="CV zoom" hidden>
-\t\t\t\t\t\t\t\t<button type="button" class="button cv-zoom__button" data-zoom="-1" aria-label="Zoom out">&minus;</button>
-\t\t\t\t\t\t\t\t<button type="button" class="button cv-zoom__button" data-zoom="0" aria-label="Fit to width">Fit</button>
-\t\t\t\t\t\t\t\t<button type="button" class="button cv-zoom__button" data-zoom="1" aria-label="Zoom in">+</button>
+\t\t\t\t\t\t\t\t<button type="button" class="cv-zoom__button" data-zoom="-1" aria-label="Zoom out">&minus;</button>
 \t\t\t\t\t\t\t\t<span class="cv-zoom__level" aria-live="polite">100%</span>
+\t\t\t\t\t\t\t\t<button type="button" class="cv-zoom__button" data-zoom="1" aria-label="Zoom in">+</button>
+\t\t\t\t\t\t\t\t<button type="button" class="cv-zoom__button cv-zoom__button--fit" data-zoom="0" aria-label="Fit to width">Fit</button>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t\t<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
 \t\t\t\t\t\t\t<div class="cv-pages" id="cv-pages" data-pdf="${pdf}" data-download="${downloadName}">
