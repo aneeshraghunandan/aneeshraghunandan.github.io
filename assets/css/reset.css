@@ -147,7 +147,7 @@ hr {
     display: block;
     height: 1px;
     border: 0;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid var(--color-border);
     margin: 1em 0;
     padding: 0
 }
@@ -180,7 +180,7 @@ body,
 select,
 input,
 textarea {
-    color: #444
+    color: var(--color-text)
 }
 
 h1,
@@ -200,12 +200,12 @@ a:active {
 a,
 a:active,
 a:visited {
-    color: #3b7ca5;
+    color: var(--color-accent);
     font-weight: bold;
 }
 
 a:hover {
-    color: #3c6883
+    color: var(--color-accent-hover)
 }
 
 ul,
