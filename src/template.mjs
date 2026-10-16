@@ -16,7 +16,7 @@ function renderNotes(items) {
 }
 
 function renderTitle(paper) {
-	const title = paper.url ? `<a href="${esc(paper.url)}" target="_blank">${esc(paper.title)}</a>` : esc(paper.title);
+	const title = paper.url ? `<a href="${esc(paper.url)}" target="_blank">${esc(paper.title)}</a>` : `<span class="article-title">${esc(paper.title)}</span>`;
 	return paper.coauthors ? `${title} <small>(with ${esc(paper.coauthors)})</small>` : title;
 }
 

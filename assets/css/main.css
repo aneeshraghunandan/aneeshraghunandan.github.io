@@ -193,8 +193,12 @@ ul {
 .info {
 	display: flow-root;
 }
-.article-header a {
+/* Unlinked titles match linked ones, minus the underline. */
+.article-header a, .article-title, ul li a {
 	font-weight: normal;
+}
+.article-title {
+	color: var(--color-accent);
 }
 
 .cv-card {
@@ -215,11 +219,8 @@ ul {
 	display: inline-block;
 	padding: 12px 0;
 	line-height: 20px;
-	font-size: var(--font-size-base);
-	text-decoration: none;
-}
-.cv-card__link:hover {
-	text-decoration: underline;
+	font-size: var(--font-size-sm);
+	font-weight: normal;
 }
 .cv-card__link:focus-visible, .cv-zoom__button:focus-visible {
 	outline: 2px solid var(--color-accent);
@@ -311,6 +312,10 @@ ul {
 	/* At least 30px between labels, so neighbouring 15px link paddings never overlap. */
 	nav ul li + li {
 		padding-left: 30px;
+	}
+	/* Links drop under the heading instead of competing with it. */
+	.cv-card__links {
+		flex-basis: 100%;
 	}
 }
 
