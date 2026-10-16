@@ -313,3 +313,31 @@ ul {
 		padding-left: 30px;
 	}
 }
+
+/* PDF.js text layer (from its pdf_viewer.css, trimmed): the CV's text as real, selectable text in the
+   body font. script.js sets --scale-factor; positions and sizes scale with it. */
+.cv-pages__sheet {
+	position: relative;
+}
+.textLayer {
+	--total-scale-factor: var(--scale-factor);
+	--scale-round-x: 1px;
+	--scale-round-y: 1px;
+	position: absolute;
+	inset: 0;
+	overflow: clip;
+	line-height: 1;
+	text-align: initial;
+	transform-origin: 0 0;
+}
+.textLayer :is(span, br) {
+	position: absolute;
+	white-space: pre;
+	color: var(--color-text);
+	cursor: text;
+	transform-origin: 0 0;
+}
+/* TextLayer's measuring canvas, which it appends to <body>. */
+.hiddenCanvasElement {
+	display: none;
+}

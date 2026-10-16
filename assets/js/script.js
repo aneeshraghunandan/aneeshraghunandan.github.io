@@ -14,6 +14,17 @@ const zoomIn = zoomBar.querySelector('[data-zoom="1"]');
 const zoomLevel = zoomBar.querySelector('.cv-zoom__level');
 let cvRequested = false;
 let cvPages = [];
+// Each page's text, drawn as real text in the body font over the canvas.
+let cvTexts = [];
+let TextLayer = null;
+let textTask = null;
+// The CV's TeX fonts, by name, and how the substitute body font shows them.
+const TEX_FACES = [[/CMBX/, 'fontWeight', 'bold'], [/CMTI|CMMI/, 'fontStyle', 'italic'], [/CMCSC/, 'fontVariant', 'small-caps']];
+const cvFont = getComputedStyle(document.documentElement).getPropertyValue('--font-body').trim();
+const MAX_STRETCH = 1.15;
+// TeX's spacing accents, as the combining marks that put them on a letter.
+const ACCENTS = { '\u00a8': '\u0308', '\u00b4': '\u0301', '`': '\u0300', '\u02c6': '\u0302', '\u02dc': '\u0303' };
+const measureCtx = document.createElement('canvas').getContext('2d');
 let zoom = 1;
 let drawnSize = '';
 let drawId = 0;
@@ -56,12 +67,18 @@ async function drawPages() {
 	drawnSize = size;
 	const id = ++drawId;
 	renderTask?.cancel();
+	textTask?.cancel();
 	const sizes = cvPages.map((page) => {
 		const base = page.getViewport({ scale: 1 });
 		return { base, height: Math.round((width * base.height) / base.width) };
 	});
 	const canvases = Array.from(box.querySelectorAll('canvas'));
-	sizes.forEach(({ height }, i) => Object.assign(canvases[i].style, { width: `${width}px`, height: `${height}px` }));
+	const layers = Array.from(box.querySelectorAll('.textLayer'));
+	sizes.forEach(({ base, height }, i) => {
+		Object.assign(canvases[i].style, { width: `${width}px`, height: `${height}px` });
+		// The text layer is sized in CSS from --scale-factor, so the old text follows the canvas until the redraw lands.
+		layers[i].style.setProperty('--scale-factor', width / base.width);
+	});
 	if (anchor) restoreScroll(anchor);
 	for (const [i, page] of cvPages.entries()) {
 		// A fresh canvas per draw: PDF.js refuses a canvas whose cancelled render has not settled yet.
@@ -69,15 +86,63 @@ async function drawPages() {
 		canvas.width = Math.round(width * devicePixelRatio);
 		canvas.height = Math.round(sizes[i].height * devicePixelRatio);
 		const viewport = page.getViewport({ scale: canvas.width / sizes[i].base.width });
-		renderTask = page.render({ canvasContext: canvas.getContext('2d'), viewport });
+		const ctx = canvas.getContext('2d');
+		// The text layer shows the letters, so the canvas keeps only rules, bullets and images.
+		// PDF.js paints this CV's Type1 fonts with fillText; its one Type3 font (bullets) is drawn as paths and stays.
+		ctx.fillText = ctx.strokeText = () => {};
+		const layer = layers[i].cloneNode();
+		const cssViewport = page.getViewport({ scale: width / sizes[i].base.width });
 		try {
+			renderTask = page.render({ canvasContext: ctx, viewport });
 			await renderTask.promise;
+			if (id !== drawId) return;
+			textTask = new TextLayer({ textContentSource: cvTexts[i], container: layer, viewport: cssViewport });
+			await textTask.render();
 		} catch (error) {
-			if (error?.name === 'RenderingCancelledException') return;
+			if (error?.name === 'RenderingCancelledException' || error?.name === 'AbortException') return;
 			throw error;
 		}
 		if (id !== drawId) return;
+		fitRuns(page, cvTexts[i], textTask.textDivs);
 		canvases[i].replaceWith(canvas);
+		layers[i].replaceWith(layer);
+	}
+}
+
+// TextLayer stretches each run with scaleX to its width in the PDF, measured in the regular face.
+// Bold, italic and small-caps runs show in that face of the body font, so their scaleX is measured
+// again in it. A run that would stretch by more than 15% (small caps, math italic) is spaced out to
+// its width instead, since stretched letters look distorted.
+function fitRuns(page, textContent, divs) {
+	// textDivs holds one entry per text item, in order, including empty ones it never attaches.
+	textContent.items.filter((item) => item.str !== undefined).forEach((item, i) => {
+		const div = divs[i];
+		const face = TEX_FACES.find(([pattern]) => pattern.test(page.commonObjs.get(item.fontName).name));
+		if (face) div.style[face[1]] = face[2];
+		// TextLayer leaves single characters unscaled.
+		if (!div.style.transform.includes('scaleX')) return;
+		// Measured at 100px, so the ratio holds at every zoom.
+		measureCtx.font = `${face?.[2] ?? ''} 100px ${cvFont}`;
+		const width = measureCtx.measureText(item.str).width / 100;
+		const scaleX = item.width / Math.hypot(item.transform[2], item.transform[3]) / width;
+		const tracked = scaleX > MAX_STRETCH;
+		if (tracked) div.style.letterSpacing = `${((scaleX - 1) * width) / item.str.length}em`;
+		// Regular runs within range keep the scaleX TextLayer computed.
+		if (face || tracked) div.style.transform = div.style.transform.replace(/scaleX\([^)]*\)/, `scaleX(${tracked ? 1 : scaleX})`);
+	});
+}
+
+// TeX sets an accent as its own mark placed over the next letter ("Universit¨" then "at"), which the
+// body font would show over the wrong letter and find-in-page would miss. Joins them into one run ("ät").
+function joinAccents(items) {
+	for (let i = items.length - 2; i >= 0; i--) {
+		const [run, next] = [items[i], items[i + 1]];
+		const mark = ACCENTS[run.str?.at(-1)];
+		if (!mark || !next.str || Math.abs(next.transform[5] - run.transform[5]) > 1) continue;
+		run.str = run.str.slice(0, -1) + (next.str[0] + mark).normalize() + next.str.slice(1);
+		run.width = next.transform[4] + next.width - run.transform[4];
+		run.hasEOL = next.hasEOL;
+		items.splice(i + 1, 1);
 	}
 }
 
@@ -115,22 +180,32 @@ async function renderCv() {
 	status.textContent = 'Loading CV pages...';
 	try {
 		const pdfjs = await import(`${PDFJS}/pdf.min.mjs`);
+		({ TextLayer } = pdfjs);
 		pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS}/pdf.worker.min.mjs`;
 		const pdf = await pdfjs.getDocument(box.dataset.pdf).promise;
 		cvPages = await Promise.all(Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1)));
+		cvTexts = await Promise.all(cvPages.map((page) => page.getTextContent()));
+		// TextLayer measures and sets each run's font from these styles.
+		cvTexts.forEach(({ items, styles }) => {
+			joinAccents(items);
+			Object.values(styles).forEach((style) => { style.fontFamily = cvFont; });
+		});
 		status.textContent = '';
 		box.replaceChildren(status, ...cvPages.map((_, i) => {
 			// The wrapper carries the shadow, so nothing composites the canvas itself.
 			const sheet = document.createElement('div');
 			sheet.className = 'cv-pages__sheet';
-			const canvas = sheet.appendChild(document.createElement('canvas'));
-			canvas.setAttribute('role', 'img');
-			canvas.setAttribute('aria-label', `CV page ${i + 1} of ${pdf.numPages}`);
+			sheet.setAttribute('role', 'group');
+			sheet.setAttribute('aria-label', `CV page ${i + 1} of ${pdf.numPages}`);
+			sheet.appendChild(document.createElement('canvas')).setAttribute('aria-hidden', 'true');
+			sheet.appendChild(document.createElement('div')).className = 'textLayer';
 			return sheet;
 		}));
 		zoomBar.hidden = false;
 		window.addEventListener('resize', scheduleDraw);
 		watchPixelRatio();
+		// TextLayer measures with the body font, so it must be loaded first.
+		await document.fonts.ready;
 		await drawPages();
 	} catch {
 		showFallback();
