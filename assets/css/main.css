@@ -45,46 +45,26 @@ nav ul li.active a, nav ul li a:hover {
 	font-weight: normal;
 	color: rgba(0, 0, 0, .75);
 }
-#container, #content, .overflow-container, .hide-left-content,
-.left-content, .right-content {
-	height: 80vh;
-	min-height: 391px;
-}
 #container {
 	padding: 25px 20px;
 	background-color: white;
 }
+/* One centred column for every pane; content scrolls with the page. */
 #content {
-	max-width: 1500px;
-	width: 80%;
+	max-width: 900px;
 	margin: 0 auto;
 }
-.overflow-container {
-	overflow: auto;
-	padding: 0 50px;
-}
-
-.hide-left-content {
-	overflow-x: auto;
-	overflow-y: hidden;
-}
-.left-content {
-	max-width: 321px;
-	float: left;
-	border-right: 1px solid #e9e9e9;
-}
+/* Photo with the name beside it, or below it when there is no room. */
 .picture-and-label {
-	height: 104px;
-	margin-top: 60px;
-}
-.picture-not-label {
-	padding: 7px;
-	float: left;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 24px;
+	margin-bottom: 20px;
 }
 .picture-not-label img {
-	max-width: 210px;
-	max-height: 210px;
-	width: 11vw;
+	display: block;
+	width: min(180px, 40vw);
 	height: auto;
 	aspect-ratio: 1;
 	object-fit: cover;
@@ -92,36 +72,16 @@ nav ul li.active a, nav ul li a:hover {
 	padding: 2px;
 }
 .label-not-picture {
-	max-width: 211px;
-	padding-left: 12px;
-	padding-top: 25px;
+	flex: 1 1 150px;
 }
 .label-not-picture h1 {
 	font-family: Arial, sans-serif;
-	position: relative;
-	font-size: 30px;
+	font-size: clamp(24px, 6vw, 30px);
 	color: #949494;
 	font-weight: normal;
 }
 .label-not-picture span {
 	color: #808080;
-}
-.label-not-picture h2 {
-	font-family: 'HelveticaNeue', 'Helvetica Neue', Arial, sans-serif;
-	font-size: 19px;
-	color: #477c9d;
-	font-weight: normal;
-	letter-spacing: -1px;
-	margin-top: -6px;
-}
-.right-content {
-	max-width: 540px;
-	float: right;
-	padding-left: 30px;
-	padding-right: 45px;
-	margin-right: auto;
-	margin-left: auto;
-	overflow: auto;
 }
 h1, h2, h3, h4, h5, h6 {
 	font-family: 'Yanone Kaffeesatz', Arial, sans-serif;
@@ -148,21 +108,6 @@ p {
 	line-height: 20px;
 	padding-bottom: 20px;
 }
-.right-content strong {
-	font-size: 14px;
-	line-height: 20px;
-	font-weight: bold;
-	color: #686868;
-}
-.right-content ul {
-	padding-top: 4px;
-	padding-bottom: 20px;
-}
-.right-content ul li {
-	color: #767676;
-	line-height: 20px;
-}
-
 ul li {
 	font-size: 14px;
 }
@@ -181,74 +126,18 @@ ul {
 	width: 80px;
 	float: left;
 }
+/* Keeps contact values in a column beside their floated label at every width. */
 .info {
 	color: #767676;
 	font-weight: normal;
-	float: left;
+	display: flow-root;
+	overflow-wrap: anywhere;
 }
 h2.article-header > a, h2.article-header > a:active, h2.article-header > a:visited, h2.article-header {
 	font-weight: normal;
 }
 
-/* Phones: single column that scrolls with the page, photo and name first. */
 @media (max-width: 719px) {
-	#container, #content, .overflow-container, .hide-left-content,
-	.left-content, .right-content {
-		height: auto;
-		min-height: 0;
-	}
-	#content {
-		width: auto;
-	}
-	.overflow-container {
-		padding: 0;
-	}
-	/* .left-content follows .right-content in the DOM; show it first. */
-	.hide-left-content {
-		display: flex;
-		flex-direction: column-reverse;
-		overflow: visible;
-	}
-	.left-content, .right-content {
-		float: none;
-		max-width: none;
-	}
-	.left-content {
-		border-right: 0;
-	}
-	.right-content {
-		padding: 0;
-		overflow: visible;
-	}
-	/* Name sits beside the photo, or wraps below it when there is no room. */
-	.picture-and-label {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		height: auto;
-		margin-top: 0;
-	}
-	.picture-not-label {
-		float: none;
-		padding: 0;
-	}
-	.picture-not-label img {
-		width: min(160px, 40vw);
-		max-height: none;
-	}
-	.label-not-picture {
-		flex: 1 1 150px;
-		padding-top: 0;
-	}
-	.label-not-picture h1 {
-		font-size: 24px;
-	}
-	/* Keep contact values in a column beside their label instead of wrapping under it. */
-	.info {
-		float: none;
-		display: flow-root;
-		overflow-wrap: anywhere;
-	}
 	nav ul li {
 		padding-left: 20px;
 	}
