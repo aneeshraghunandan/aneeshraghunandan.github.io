@@ -7,8 +7,8 @@ import { validateSite } from './src/content.mjs';
 import { renderPage } from './src/template.mjs';
 
 const OUT = '_site';
-// Order matters: same cascade as the three <link> tags this replaced.
-const CSS_FILES = ['assets/css/font_Yanone_Kaffeesatz.css', 'assets/css/reset.css', 'assets/css/main.css'];
+// Order matters: the @font-face rules come first.
+const CSS_FILES = ['assets/css/font_Yanone_Kaffeesatz.css', 'assets/css/main.css'];
 const JS_FILE = 'assets/js/script.js';
 const STATIC_FILES = ['CNAME', 'assets/favicon.png', 'assets/img'];
 // Stable public URL for the CV, whatever site.json's cv.file is called.
