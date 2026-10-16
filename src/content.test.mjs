@@ -1,13 +1,11 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
-import { cvFontWarnings, pdfMonth, validateSite } from './content.mjs';
+import { cvFontWarnings, pdfMonth, readSite, validateSite } from './content.mjs';
 import { cvFace } from './cvfonts.mjs';
 import { escapeHtml, photoWidths, renderPage } from './template.mjs';
 
-const site = JSON.parse(await readFile(new URL('../content/site.json', import.meta.url), 'utf8'));
-// As in build.mjs: cv.updated falls back to the date inside the committed PDF.
-site.cv.updated ??= pdfMonth(await readFile(new URL(`../${site.cv.file}`, import.meta.url)));
+// The build's own reader, so cv.updated falls back to the committed PDF's date exactly as in a build.
+const { site, cvWarnings } = await readSite();
 const photo = [180, 270, 360].map((width) => ({ url: `/assets/img/photo-${width}.abc.webp`, width, height: width }));
 const assets = { styles: 'p{}', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com', photo };
 
@@ -89,7 +87,7 @@ test('CV font names map to the body font\'s faces', () => {
 });
 
 test('the build warns about CVs not set in Computer Modern', async () => {
-	assert.deepEqual(cvFontWarnings(await readFile(new URL(`../${site.cv.file}`, import.meta.url)), 'cv.pdf'), []);
+	assert.deepEqual(cvWarnings, []);
 	const font = (dict) => `1 0 obj << /Type /Font ${dict} >> endobj`;
 	assert.match(cvFontWarnings(Buffer.from(font('/Subtype /TrueType /BaseFont /ABCDEF+Calibri-Bold') + font('/Subtype /Type1 /BaseFont /CMR10')), 'cv.pdf')[0], /Computer Modern.*: Calibri-Bold \(bold\)\. /);
 	assert.match(cvFontWarnings(Buffer.from('%PDF-1.7 /ObjStm'), 'cv.pdf')[0], /compressed/);

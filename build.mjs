@@ -1,10 +1,10 @@
 // Builds the site into _site/: renders a page per tab (index.html, research/, cv/) and 404.html from content/site.json, inlines minified CSS, bundles JS with a hashed name, copies static files.
 import { createHash } from 'node:crypto';
-import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { build as bundle, transform } from 'esbuild';
 import sharp from 'sharp';
-import { cvFontWarnings, pdfMonth, validateSite } from './src/content.mjs';
+import { readSite } from './src/content.mjs';
 import { TABS } from './src/tabs.mjs';
 import { photoWidths, renderPage } from './src/template.mjs';
 
@@ -15,28 +15,6 @@ const JS_FILE = 'assets/js/script.js';
 const STATIC_FILES = ['CNAME', 'assets/favicon.png', 'assets/img'];
 // Stable public URL for the CV, whatever site.json's cv.file is called.
 const CV_URL = '/Aneesh_Raghunandan_CV.pdf';
-
-async function readSite() {
-	const text = await readFile('content/site.json', 'utf8');
-	let site;
-	try {
-		site = JSON.parse(text);
-	} catch (error) {
-		throw new Error(`content/site.json is not valid JSON: ${error.message}`);
-	}
-	validateSite(site);
-	for (const [field, file] of [['photo', site.photo], ['cv.file', site.cv.file]]) {
-		await access(file).catch(() => {
-			throw new Error(`content/site.json: ${field} points to "${file}", which does not exist`);
-		});
-	}
-	const cvBytes = await readFile(site.cv.file);
-	site.cv.updated ??= pdfMonth(cvBytes);
-	// GitHub Actions shows ::warning lines on the run's summary page.
-	for (const warning of cvFontWarnings(cvBytes, site.cv.file)) console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=CV::' : 'Warning: '}${warning}`);
-	if (!site.cv.updated) throw new Error(`${site.cv.file} has no creation date; set cv.updated in content/site.json, e.g. "2026-08"`);
-	return site;
-}
 
 // Writes `code` to dir/name.<hash>.ext and returns its root-absolute URL.
 async function writeHashed(dir, name, ext, code) {
@@ -78,7 +56,9 @@ async function copyTo(src, dest) {
 }
 
 async function build() {
-	const site = await readSite();
+	const { site, cvWarnings } = await readSite();
+	// GitHub Actions shows ::warning lines on the run's summary page.
+	for (const warning of cvWarnings) console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=CV::' : 'Warning: '}${warning}`);
 	await rm(OUT, { recursive: true, force: true });
 	const assets = {
 		// Inlined into each page: at ~5 KB it costs less than a render-blocking request.

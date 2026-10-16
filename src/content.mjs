@@ -1,5 +1,6 @@
 // Checks content/site.json and throws one readable error per problem, naming the field path.
 
+import { access, readFile } from 'node:fs/promises';
 import { baseFontName, cvFace, isComputerModern } from './cvfonts.mjs';
 
 const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
@@ -122,4 +123,29 @@ export function cvFontWarnings(bytes, file) {
 	});
 	if (shapes.length > 0) warnings.push(`${file} draws text in ${shapes.length} font(s) as shapes (Type3). That text shows in the PDF's own lettering, not the site font.`);
 	return warnings;
+}
+
+/**
+ * Reads and validates content/site.json (paths relative to the repo root, where build and tests run).
+ * Without cv.updated, the month falls back to the date inside the CV PDF; with neither, it throws.
+ * Returns the site and the CV's font warnings.
+ */
+export async function readSite() {
+	const text = await readFile('content/site.json', 'utf8');
+	let site;
+	try {
+		site = JSON.parse(text);
+	} catch (error) {
+		throw new Error(`content/site.json is not valid JSON: ${error.message}`);
+	}
+	validateSite(site);
+	for (const [field, file] of [['photo', site.photo], ['cv.file', site.cv.file]]) {
+		await access(file).catch(() => {
+			throw new Error(`content/site.json: ${field} points to "${file}", which does not exist`);
+		});
+	}
+	const cvBytes = await readFile(site.cv.file);
+	site.cv.updated ??= pdfMonth(cvBytes);
+	if (!site.cv.updated) throw new Error(`${site.cv.file} has no creation date; set cv.updated in content/site.json, e.g. "2026-08"`);
+	return { site, cvWarnings: cvFontWarnings(cvBytes, site.cv.file) };
 }
