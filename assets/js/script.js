@@ -6,6 +6,8 @@ const ZOOM_STEP = 0.25;
 const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 3;
 const box = document.getElementById('cv-pages');
+// role="status": stays in the box so screen readers hear loading and failure messages.
+const status = box.querySelector('.cv-pages__status');
 const zoomBar = document.getElementById('cv-zoom');
 const zoomOut = zoomBar.querySelector('[data-zoom="-1"]');
 const zoomIn = zoomBar.querySelector('[data-zoom="1"]');
@@ -22,7 +24,8 @@ function showFallback() {
 	zoomBar.hidden = true;
 	const { pdf, download } = box.dataset;
 	// pdf and download come from the build (fixed path and a validated date), not from visitors.
-	box.innerHTML = `<p>The CV pages could not be shown here. <a href="${pdf}" target="_blank" rel="noopener">View the PDF</a> or <a href="${pdf}" download="${download}">download it</a>.</p>`;
+	box.replaceChildren(status);
+	status.innerHTML = `The CV pages could not be shown here. <a href="${pdf}" target="_blank" rel="noopener">View the PDF</a> or <a href="${pdf}" download="${download}">download it</a>.`;
 }
 
 // Notes which point of the pages sits mid-screen, as fractions of the page area.
@@ -109,12 +112,14 @@ zoomBar.addEventListener('click', (event) => {
 
 // Loads PDF.js only when the CV tab first opens, then draws every page of the CV.
 async function renderCv() {
+	status.textContent = 'Loading CV pages...';
 	try {
 		const pdfjs = await import(`${PDFJS}/pdf.min.mjs`);
 		pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS}/pdf.worker.min.mjs`;
 		const pdf = await pdfjs.getDocument(box.dataset.pdf).promise;
 		cvPages = await Promise.all(Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1)));
-		box.replaceChildren(...cvPages.map((_, i) => {
+		status.textContent = '';
+		box.replaceChildren(status, ...cvPages.map((_, i) => {
 			// The wrapper carries the shadow, so nothing composites the canvas itself.
 			const sheet = document.createElement('div');
 			sheet.className = 'cv-pages__sheet';

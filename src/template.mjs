@@ -101,7 +101,7 @@ function renderCv(site, cvUrl) {
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t\t<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
 \t\t\t\t\t\t\t<div class="cv-pages" id="cv-pages" data-pdf="${pdf}" data-download="${downloadName}">
-\t\t\t\t\t\t\t\t<p class="cv-pages__status">Loading CV pages...</p>
+\t\t\t\t\t\t\t\t<p class="cv-pages__status" role="status">Loading CV pages...</p>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t</div>
 \t\t\t\t\t</div>`;
@@ -133,13 +133,13 @@ export function renderPage(site, assets) {
 					</ul>
 				</nav>
 			</header>
-			<div id="container">
+			<main id="container">
 				<div id="content">
 ${renderAbout(site)}
 ${renderResearch(site)}
 ${renderCv(site, assets.cv)}
 				</div>
-			</div>
+			</main>
 			<footer>
 			</footer>
 		</div>

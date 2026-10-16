@@ -96,9 +96,10 @@ nav ul li a, nav ul li a:visited {
 	text-transform: uppercase;
 	text-decoration: none;
 	text-shadow: rgba(255, 255, 255, .70) 0 1px 0;
-	/* 8 + 28 + 8 = 44px tap target. */
+	/* 8 + 28 + 8 = 44px tall; the side padding makes "CV" 44px wide, and the matching negative margin keeps the tab spacing. */
 	line-height: 28px;
-	padding: var(--space-sm) 0;
+	padding: var(--space-sm) 15px;
+	margin: 0 -15px;
 }
 nav ul li.active a, nav ul li a:hover {
 	color: rgba(0, 0, 0, .75);
@@ -306,5 +307,9 @@ ul {
 @media (max-width: 719px) {
 	nav ul li {
 		padding-left: 20px;
+	}
+	/* At least 30px between labels, so neighbouring 15px link paddings never overlap. */
+	nav ul li + li {
+		padding-left: 30px;
 	}
 }
