@@ -158,8 +158,7 @@ select {
 }
 
 body {
-    font: 13px/1.231 sans-serif;
-    *font-size: small
+    font: 13px/1.231 sans-serif
 }
 
 select,
@@ -258,25 +257,12 @@ textarea {
     overflow: auto
 }
 
-.ie6 legend,
-.ie7 legend {
-    margin-left: -7px
-}
-
 input[type="radio"] {
     vertical-align: text-bottom
 }
 
 input[type="checkbox"] {
     vertical-align: bottom
-}
-
-.ie7 input[type="checkbox"] {
-    vertical-align: baseline
-}
-
-.ie6 input {
-    vertical-align: text-bottom
 }
 
 label,
@@ -309,10 +295,6 @@ textarea:invalid {
 button {
     width: auto;
     overflow: visible
-}
-
-.ie7 img {
-    -ms-interpolation-mode: bicubic
 }
 
 .ir {
@@ -349,10 +331,6 @@ button {
 
 .clearfix:after {
     clear: both
-}
-
-.clearfix {
-    zoom: 1
 }
 
 @media print {
