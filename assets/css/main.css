@@ -35,7 +35,9 @@ nav ul li a, nav ul li a:visited {
 	text-transform: uppercase;
 	text-decoration: none;
 	text-shadow: rgba(255, 255, 255, .70) 0 1px 0;
-	padding-bottom: 8px;
+	/* 8 + 28 + 8 = 44px tap target. */
+	line-height: 28px;
+	padding: 8px 0;
 }
 nav ul li.active a, nav ul li a:hover {
 	font-family: 'Yanone Kaffeesatz', Arial, sans-serif;
