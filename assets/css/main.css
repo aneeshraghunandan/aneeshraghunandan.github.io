@@ -32,19 +32,13 @@ body {
 }
 a, a:active, a:visited {
 	color: var(--color-accent);
-	font-weight: bold;
 }
 a:hover {
 	color: var(--color-accent-hover);
 }
 ul {
 	margin-left: 1.8em;
-}
-nav ul {
-	list-style: none;
-}
-nav ul, nav li {
-	margin: 0;
+	padding-bottom: 10px;
 }
 hr {
 	height: 1px;
@@ -72,11 +66,15 @@ header {
 }
 nav {
 	position: absolute;
-	bottom: 0px;
+	bottom: 0;
 }
 nav ul {
-	margin-bottom: -2px;
-	padding-bottom: 0px;
+	list-style: none;
+	margin: 0 0 -2px;
+	padding-bottom: 0;
+}
+nav li {
+	margin: 0;
 }
 nav ul li {
 	float: left;
@@ -145,7 +143,7 @@ nav ul li.active a, nav ul li a:hover {
 h1, h2 {
 	font-family: var(--font-heading);
 	font-weight: lighter;
-	padding: 10px 0px;
+	padding: 10px 0;
 }
 h1 {
 	font-size: var(--font-size-xl);
@@ -176,10 +174,6 @@ ul li {
 	color: var(--color-muted);
 }
 
-ul {
-	padding-bottom: 10px;
-}
-
 .contact-info {
 	padding-bottom: 3px;
 }
@@ -194,9 +188,6 @@ ul {
 	display: flow-root;
 }
 /* Unlinked titles match linked ones, minus the underline. */
-.article-header a, .article-title, ul li a {
-	font-weight: normal;
-}
 .article-title {
 	color: var(--color-accent);
 }
@@ -220,7 +211,6 @@ ul {
 	padding: 12px 0;
 	line-height: 20px;
 	font-size: var(--font-size-sm);
-	font-weight: normal;
 }
 .cv-card__link:focus-visible, .cv-zoom__button:focus-visible {
 	outline: 2px solid var(--color-accent);
@@ -287,6 +277,7 @@ ul {
 }
 /* One PDF page; the shadow sits here so the canvas itself is never composited or resampled. */
 .cv-pages__sheet {
+	position: relative;
 	width: fit-content;
 	margin: 0 auto var(--space-md);
 	background-color: white;
@@ -321,9 +312,6 @@ ul {
 
 /* PDF.js text layer (from its pdf_viewer.css, trimmed): the CV's text as real, selectable text in the
    body font. script.js sets --scale-factor; positions and sizes scale with it. */
-.cv-pages__sheet {
-	position: relative;
-}
 .textLayer {
 	--total-scale-factor: var(--scale-factor);
 	--scale-round-x: 1px;
