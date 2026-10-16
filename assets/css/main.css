@@ -250,4 +250,8 @@ h2.article-header > a, h2.article-header > a:active, h2.article-header > a:visit
 	nav ul li {
 		padding-left: 20px;
 	}
+	/* Phone browsers render inline PDFs poorly or not at all; the download link above remains. */
+	.cv-embed {
+		display: none;
+	}
 }
