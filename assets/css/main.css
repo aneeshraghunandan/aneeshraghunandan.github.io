@@ -216,14 +216,19 @@ ul li {
 	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
 }
-/* Wider than the 900px column so the CV's 10pt text is readable; a 16px gutter each side. */
+/* The 900px column, so the CV's 10pt text shows near the site's 14px; a 16px gutter each side on small screens. */
 .cv-viewer {
-	--cv-viewer-width: min(1100px, 100vw - 2 * var(--space-md));
+	--cv-viewer-width: min(900px, 100vw - 2 * var(--space-md));
 	width: var(--cv-viewer-width);
 	margin: var(--space-lg) calc((100% - var(--cv-viewer-width)) / 2) 0;
 }
-/* Secondary controls: a hairline group of small buttons, right-aligned above the pages. */
+/* Secondary controls: a hairline group of small buttons, right-aligned above the pages. It sticks to the
+   top of the screen while the pages scroll, so it stays under the pointer through repeated zooms. */
 .cv-zoom {
+	position: sticky;
+	top: var(--space-sm);
+	z-index: 1;
+	background-color: white;
 	display: flex;
 	align-items: center;
 	width: fit-content;

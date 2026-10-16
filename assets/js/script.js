@@ -42,16 +42,18 @@ function showFallback() {
 	status.innerHTML = `The CV pages could not be shown here. <a href="${pdf}" target="_blank" rel="noopener">View the PDF</a> or <a href="${pdf}" download="${download}">download it</a>.`;
 }
 
-// Notes which point of the pages sits mid-screen, as fractions of the page area.
+// Notes which point of the pages sits mid-screen, as fractions of the page area, and whether the zoom bar is stuck to the top.
 function scrollAnchor() {
 	const rect = box.getBoundingClientRect();
-	return { x: (box.scrollLeft + box.clientWidth / 2) / box.scrollWidth, y: (innerHeight / 2 - rect.top) / rect.height };
+	const stuck = zoomBar.parentNode.getBoundingClientRect().top < parseFloat(getComputedStyle(zoomBar).top);
+	return { x: (box.scrollLeft + box.clientWidth / 2) / box.scrollWidth, y: (innerHeight / 2 - rect.top) / rect.height, stuck };
 }
 
 // Puts that point back mid-screen after a resize; roughly, since the padding does not scale.
-function restoreScroll({ x, y }) {
+// Scrolling the page would move an unstuck zoom bar away from the pointer, so then only the sideways position is kept.
+function restoreScroll({ x, y, stuck }) {
 	box.scrollLeft = x * box.scrollWidth - box.clientWidth / 2;
-	if (y < 0 || y > 1) return;
+	if (!stuck || y < 0 || y > 1) return;
 	const rect = box.getBoundingClientRect();
 	scrollBy(0, rect.top + y * rect.height - innerHeight / 2);
 }
