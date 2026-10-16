@@ -25,12 +25,13 @@ All page text lives in [`content/site.json`](content/site.json).
 | `coauthors` | no | `"Ken Li and Maureen McNichols"` (shown as "(with ...)") |
 | `venue` | publications: yes | `"The Accounting Review"` (shown in italics) |
 | `status` | no | `"Forthcoming"`, `"Revise and Resubmit"` |
-| `volume`, `year` | publications without `status` | `"100(1)"`, `"2025"` |
+| `volume`, `year` | publications without `status` (never on working papers) | `"100(1)"`, `"2025"` |
 | `notes_html` | no | `["Best Paper Award, 2020 RAST Conference"]` |
 
 A publication shows "status, *venue*" when it has a `status`, otherwise
 "*venue* volume, year". A working paper with `status` and `venue` shows them as
-its first bullet.
+its first bullet. The page adds the commas, so `venue`, `volume`, `year` and
+`status` must not end in `.`, `,`, `;` or `:`.
 
 If a field is missing or misspelled, the build stops and the Actions log names it,
 for example `content/site.json: publications[2].title must be a non-empty text value`.
@@ -54,6 +55,12 @@ PDF has no readable date, override it in [`content/site.json`](content/site.json
 
 An override wins over every later PDF until it is removed, so delete `updated`
 again with the next CV upload.
+
+The CV tab draws the PDF's pages in the browser and shows its text in the site's
+font, picking bold, italic and small caps from each font's name. It was built for
+LaTeX CVs (Computer Modern fonts). A CV made another way still works, but the build
+then shows a warning in the Actions log naming each font and how it will look; open
+the CV tab after the deploy and check it.
 
 The site always serves the CV at `/Aneesh_Raghunandan_CV.pdf`, so links to it keep
 working. The month sets the "Updated August 2026" line on the CV tab and the

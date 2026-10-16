@@ -4,7 +4,7 @@ import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { build as bundle, transform } from 'esbuild';
 import sharp from 'sharp';
-import { pdfMonth, validateSite } from './src/content.mjs';
+import { cvFontWarnings, pdfMonth, validateSite } from './src/content.mjs';
 import { TABS } from './src/tabs.mjs';
 import { photoWidths, renderPage } from './src/template.mjs';
 
@@ -30,7 +30,10 @@ async function readSite() {
 			throw new Error(`content/site.json: ${field} points to "${file}", which does not exist`);
 		});
 	}
-	site.cv.updated ??= pdfMonth(await readFile(site.cv.file));
+	const cvBytes = await readFile(site.cv.file);
+	site.cv.updated ??= pdfMonth(cvBytes);
+	// GitHub Actions shows ::warning lines on the run's summary page.
+	for (const warning of cvFontWarnings(cvBytes, site.cv.file)) console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=CV::' : 'Warning: '}${warning}`);
 	if (!site.cv.updated) throw new Error(`${site.cv.file} has no creation date; set cv.updated in content/site.json, e.g. "2026-08"`);
 	return site;
 }

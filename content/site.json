@@ -5,7 +5,7 @@
     "Aneesh Raghunandan",
     "Yale School of Management",
     "Evans Hall",
-    "165 Whitney Ave,New Haven, CT 06511"
+    "165 Whitney Ave, New Haven, CT 06511"
   ],
   "photo": "content/photo.jpg",
   "about_html": [
@@ -43,7 +43,7 @@
       "coauthors": "Trung Nguyen and Alexa Scherf",
       "venue": "Journal of Accounting Research",
       "volume": "63(2)",
-      "year": "2025."
+      "year": "2025"
     },
     {
       "title": "Tax Subsidy Disclosure and Local Economic Effects",
@@ -51,7 +51,7 @@
       "coauthors": "Lisa De Simone and Rebecca Lester",
       "venue": "Journal of Accounting Research",
       "volume": "63(2)",
-      "year": "2025."
+      "year": "2025"
     },
     {
       "title": "Do Socially Responsible Firms Walk the Talk?",
@@ -59,7 +59,7 @@
       "coauthors": "Shiva Rajgopal",
       "venue": "Journal of Law and Economics",
       "volume": "67(4)",
-      "year": "2024.",
+      "year": "2024",
       "notes_html": [
         "<a href=\"https://www.wsj.com/articles/is-there-real-virtue-behind-the-business-roundtables-signaling-11575330172\">Wall Street Journal op-ed</a> (December 2, 2019)"
       ]
@@ -70,14 +70,14 @@
       "coauthors": "Qingkai Dong and Shiva Rajgopal",
       "venue": "Review of Accounting Studies",
       "volume": "29(4)",
-      "year": "2024."
+      "year": "2024"
     },
     {
       "title": "Government Subsidies and Corporate Misconduct",
       "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3035254",
       "venue": "Journal of Accounting Research",
       "volume": "62(4)",
-      "year": "2024."
+      "year": "2024"
     },
     {
       "title": "The Impact of Information Frictions Within Regulators: Evidence from Workplace Safety Violations",
@@ -94,23 +94,23 @@
       "coauthors": "Jitendra Aswani and Shiva Rajgopal",
       "venue": "Review of Finance",
       "volume": "28(1)",
-      "year": "2024."
+      "year": "2024"
     },
     {
       "title": "Do ESG Funds Make Stakeholder-Friendly Investments?",
       "url": "https://link.springer.com/article/10.1007/s11142-022-09693-1",
       "coauthors": "Shiva Rajgopal",
-      "venue": "Review of Accounting Studies;",
+      "venue": "Review of Accounting Studies",
       "volume": "27(3)",
-      "year": "2022.",
+      "year": "2022",
       "notes_html": ["Presented at 2021 RAST Conference"]
     },
     {
       "title": "Financial Misconduct and Employee Mistreatment: Evidence from Wage Theft",
       "url": "https://link.springer.com/article/10.1007/s11142-021-09602-y",
-      "venue": "Review of Accounting Studies;",
+      "venue": "Review of Accounting Studies",
       "volume": "26(3)",
-      "year": "2021.",
+      "year": "2021",
       "notes_html": [
         "Presented at 2020 RAST Conference",
         "Best Paper Award, 2020 RAST Conference"
@@ -120,16 +120,16 @@
       "title": "Are audit fees discounted in initial year audit engagements?",
       "url": "https://www.sciencedirect.com/science/article/pii/S0165410119300771",
       "coauthors": "Abhijit Barua and Clive Lennox",
-      "venue": "Journal of Accounting and Economics;",
+      "venue": "Journal of Accounting and Economics",
       "volume": "69(2-3)",
-      "year": "2020."
+      "year": "2020"
     }
   ],
   "working_papers": [
     {
       "title": "Reputation-Building Actions After Corporate Social Irresponsibility",
       "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4305248",
-      "coauthors": "Wei Cai,  Shiva Rajgopal, and Wenxin Wang",
+      "coauthors": "Wei Cai, Shiva Rajgopal, and Wenxin Wang",
       "status": "Revise and Resubmit",
       "venue": "Management Science"
     },

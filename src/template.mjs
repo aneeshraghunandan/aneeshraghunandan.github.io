@@ -116,9 +116,9 @@ function renderCv(site, cvUrl, attrs) {
 \t\t\t\t\t\t\t\t<button type="button" class="cv-zoom__button" data-zoom="1" aria-label="Zoom in">+</button>
 \t\t\t\t\t\t\t\t<button type="button" class="cv-zoom__button cv-zoom__button--fit" data-zoom="0" aria-label="Fit to width">Fit</button>
 \t\t\t\t\t\t\t</div>
-\t\t\t\t\t\t\t<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
+\t\t\t\t\t\t\t<!-- script.js replaces this message and renders the PDF pages here with PDF.js the first time this tab opens. -->
 \t\t\t\t\t\t\t<div class="cv-pages" id="cv-pages" data-pdf="${pdf}" data-download="${downloadName}">
-\t\t\t\t\t\t\t\t<p class="cv-pages__status" role="status">Loading CV pages...</p>
+\t\t\t\t\t\t\t\t<p class="cv-pages__status" role="status">The CV pages need JavaScript to show here. <a href="${pdf}" target="_blank" rel="noopener">View the PDF</a> or <a href="${pdf}" download="${downloadName}">download it</a>.</p>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t</div>
 \t\t\t\t\t</div>`;
@@ -170,6 +170,7 @@ ${renderNav(active, name)}
 			</header>
 			<main id="container">
 				<div id="content">${note}
+					<noscript><p class="no-js">JavaScript is off. Every page still works, but the CV tab shows links to the PDF instead of its pages, and old links ending in #research or #cv open the About page.</p></noscript>
 ${renderAbout(site, assets.photo, attrs('about'))}
 ${renderResearch(site, attrs('research'))}
 ${renderCv(site, assets.cv, attrs('cv'))}
