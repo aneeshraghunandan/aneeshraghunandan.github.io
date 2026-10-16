@@ -1,0 +1,173 @@
+{
+  "name": { "first": "Aneesh", "last": "Raghunandan" },
+  "email": "aneesh.raghunandan@yale.edu",
+  "address": [
+    "Aneesh Raghunandan",
+    "Yale School of Management",
+    "Evans Hall",
+    "165 Whitney Ave,New Haven, CT 06511"
+  ],
+  "photo": "content/photo.jpg",
+  "about_html": [
+    "I'm an Associate Professor of Accounting at Yale School of Management. Prior to joining Yale, I spent seven years on the faculty at the London School of Economics. I received a PhD in Accounting from Stanford University in 2017 and my undergraduate degrees from Yale in 2011.",
+    "My research interests span non-financial misconduct, ESG issues, and political connections (especially subsidies)",
+    "You can find my official Yale webpage <a href=\"https://som.yale.edu/faculty-research/faculty-directory/aneesh-raghunandan\">here</a>."
+  ],
+  "interests": "My research interests span non-financial misconduct, ESG issues, and corporate subsidies. If there is no link to a paper below, please contact me directly if you would like a copy.",
+  "publications": [
+    {
+      "title": "Misreporting of Mandatory ESG Disclosures: Evidence from Gender Pay Gap Information",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4192257",
+      "coauthors": "McKenna Bailey, Stephen Glaeser, and James Omartian",
+      "venue": "Management Science",
+      "status": "Forthcoming"
+    },
+    {
+      "title": "The Economics of ESG Disclosure Regulation",
+      "url": "https://link.springer.com/article/10.1007/s11142-025-09900-9",
+      "coauthors": "Rich Frankel and S.P. Kothari",
+      "venue": "Review of Accounting Studies",
+      "status": "Forthcoming"
+    },
+    {
+      "title": "Two-Sided Matching in the Audit Market",
+      "url": "https://publications.aaahq.org/accounting-review/article-abstract/100/3/363/13290",
+      "coauthors": "Ken Li and Maureen McNichols",
+      "venue": "The Accounting Review",
+      "volume": "100(1)",
+      "year": "2025"
+    },
+    {
+      "title": "How Does Judges' Personal Exposure to Financial Fraud Affect White-Collar Sentencing?",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/1475-679X.12584",
+      "coauthors": "Trung Nguyen and Alexa Scherf",
+      "venue": "Journal of Accounting Research",
+      "volume": "63(2)",
+      "year": "2025."
+    },
+    {
+      "title": "Tax Subsidy Disclosure and Local Economic Effects",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/1475-679X.12591",
+      "coauthors": "Lisa De Simone and Rebecca Lester",
+      "venue": "Journal of Accounting Research",
+      "volume": "63(2)",
+      "year": "2025."
+    },
+    {
+      "title": "Do Socially Responsible Firms Walk the Talk?",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3609056",
+      "coauthors": "Shiva Rajgopal",
+      "venue": "Journal of Law and Economics",
+      "volume": "67(4)",
+      "year": "2024.",
+      "notes_html": [
+        "<a href=\"https://www.wsj.com/articles/is-there-real-virtue-behind-the-business-roundtables-signaling-11575330172\">Wall Street Journal op-ed</a> (December 2, 2019)"
+      ]
+    },
+    {
+      "title": "When Do Firms Deliver on the Jobs They Promise in Return for State Aid?",
+      "url": "https://link.springer.com/article/10.1007/s11142-023-09804-6",
+      "coauthors": "Qingkai Dong and Shiva Rajgopal",
+      "venue": "Review of Accounting Studies",
+      "volume": "29(4)",
+      "year": "2024."
+    },
+    {
+      "title": "Government Subsidies and Corporate Misconduct",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3035254",
+      "venue": "Journal of Accounting Research",
+      "volume": "62(4)",
+      "year": "2024."
+    },
+    {
+      "title": "The Impact of Information Frictions Within Regulators: Evidence from Workplace Safety Violations",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1111/1475-679X.12541",
+      "coauthors": "Thomas Ruchti",
+      "venue": "Journal of Accounting Research",
+      "volume": "62(3)",
+      "year": "2024",
+      "notes_html": ["Selected for 2023 JAR conference"]
+    },
+    {
+      "title": "Are Carbon Emissions Associated with Stock Returns?",
+      "url": "https://academic.oup.com/rof/advance-article/doi/10.1093/rof/rfad013/7100359",
+      "coauthors": "Jitendra Aswani and Shiva Rajgopal",
+      "venue": "Review of Finance",
+      "volume": "28(1)",
+      "year": "2024."
+    },
+    {
+      "title": "Do ESG Funds Make Stakeholder-Friendly Investments?",
+      "url": "https://link.springer.com/article/10.1007/s11142-022-09693-1",
+      "coauthors": "Shiva Rajgopal",
+      "venue": "Review of Accounting Studies;",
+      "volume": "27(3)",
+      "year": "2022.",
+      "notes_html": ["Presented at 2021 RAST Conference"]
+    },
+    {
+      "title": "Financial Misconduct and Employee Mistreatment: Evidence from Wage Theft",
+      "url": "https://link.springer.com/article/10.1007/s11142-021-09602-y",
+      "venue": "Review of Accounting Studies;",
+      "volume": "26(3)",
+      "year": "2021.",
+      "notes_html": [
+        "Presented at 2020 RAST Conference",
+        "Best Paper Award, 2020 RAST Conference"
+      ]
+    },
+    {
+      "title": "Are audit fees discounted in initial year audit engagements?",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0165410119300771",
+      "coauthors": "Abhijit Barua and Clive Lennox",
+      "venue": "Journal of Accounting and Economics;",
+      "volume": "69(2-3)",
+      "year": "2020."
+    }
+  ],
+  "working_papers": [
+    {
+      "title": "Reputation-Building Actions After Corporate Social Irresponsibility",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4305248",
+      "coauthors": "Wei Cai,  Shiva Rajgopal, and Wenxin Wang",
+      "status": "Revise and Resubmit",
+      "venue": "Management Science"
+    },
+    {
+      "title": "Racial Disparities in the Processing of Whistleblower Complaints",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5383732",
+      "coauthors": "Marco Errico and Sinja Leonelli",
+      "status": "Revise and Resubmit",
+      "venue": "Journal of Accounting and Economics"
+    },
+    {
+      "title": "Media Coverage of Employment Discrimination",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4637209",
+      "coauthors": "Devin Shanthikumar and Elizabeth Tori",
+      "status": "Revise and Resubmit",
+      "venue": "The Accounting Review"
+    },
+    {
+      "title": "Hiding in Plain Sight: Online Complaints as an Alternative to Whistleblowing",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5046372",
+      "coauthors": "Jeroen Koenraadt and Thomas Ruchti",
+      "status": "Revise and Resubmit",
+      "venue": "Review of Accounting Studies"
+    },
+    {
+      "title": "Mandatory US Subsidy Disclosures: Early Evidence",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5135879",
+      "coauthors": "Dian Jiao, Min Jun Song, and Shiva Rajgopal"
+    },
+    {
+      "title": "Decarbonization without Divestment: Evidence from Intra-Group Loan Reallocation",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5503800",
+      "coauthors": "Yinan Li and Jacob Ott"
+    },
+    {
+      "title": "Is There a Gap Between Firms and Investors in Climate Disclosure? Survey Evidence",
+      "coauthors": "Xingchao Gao, Gaizka Ormazabal, and Giulia Sargiacomo"
+    }
+  ],
+  "cv": { "file": "content/cv.pdf", "updated": "2026-08" }
+}
