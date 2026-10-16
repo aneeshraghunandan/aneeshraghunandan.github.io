@@ -87,7 +87,7 @@ function renderCv(site, cvUrl) {
 \t\t\t\t\t\t\t\t<p>PDF. Open it in a new tab or save a copy.</p>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t\t<div class="cv-card__actions">
-\t\t\t\t\t\t\t\t<a class="button button--primary" href="${pdf}" target="_blank" rel="noopener">View</a>
+\t\t\t\t\t\t\t\t<a class="button" href="${pdf}" target="_blank" rel="noopener">View</a>
 \t\t\t\t\t\t\t\t<a class="button" href="${pdf}" download="${downloadName}">Download</a>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t</div>

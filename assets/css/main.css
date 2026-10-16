@@ -177,30 +177,26 @@ ul {
 	display: flex;
 	gap: 12px;
 }
+/* Quiet outlined actions in the nav face; min-height keeps a 44px tap target. */
 .button {
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
-	padding: 0 22px;
-	border: 1px solid #3b6e8f;
+	padding: 0 var(--space-md);
+	border: 1px solid var(--color-border);
 	border-radius: 4px;
-	font-size: 15px;
-	font-weight: bold;
-	color: #3b6e8f;
+	font-family: var(--font-heading);
+	font-size: var(--font-size-lg);
+	font-weight: normal;
+	letter-spacing: .04em;
+	text-transform: uppercase;
 	text-decoration: none;
 }
 .button:hover {
-	background-color: #eef3f6;
-}
-.button--primary {
-	background-color: #3b6e8f;
-	color: white;
-}
-.button--primary:hover {
-	background-color: #2f5873;
+	border-color: var(--color-accent-hover);
 }
 .button:focus-visible {
-	outline: 2px solid #3b6e8f;
+	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
 }
 .cv-pages {
