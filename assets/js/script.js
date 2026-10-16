@@ -1,3 +1,4 @@
+import { cvFace } from '../../src/cvfonts.mjs';
 import { pathForHash, tabForPath } from '../../src/tabs.mjs';
 
 const panes = Array.from(document.querySelectorAll('#content > div'));
@@ -15,13 +16,13 @@ const zoomOut = zoomBar.querySelector('[data-zoom="-1"]');
 const zoomIn = zoomBar.querySelector('[data-zoom="1"]');
 const zoomLevel = zoomBar.querySelector('.cv-zoom__level');
 let cvRequested = false;
+// Set once the pages exist and the body font has loaded, so a redraw can measure text.
+let cvReady = false;
 let cvPages = [];
 // Each page's text, drawn as real text in the body font over the canvas.
 let cvTexts = [];
 let TextLayer = null;
 let textTask = null;
-// The CV's TeX fonts, by name, and how the substitute body font shows them.
-const TEX_FACES = [[/CMBX/, 'fontWeight', 'bold'], [/CMTI|CMMI/, 'fontStyle', 'italic'], [/CMCSC/, 'fontVariant', 'small-caps']];
 const cvFont = getComputedStyle(document.documentElement).getPropertyValue('--font-body').trim();
 const MAX_STRETCH = 1.15;
 // TeX's spacing accents, as the combining marks that put them on a letter.
@@ -41,16 +42,18 @@ function showFallback() {
 	status.innerHTML = `The CV pages could not be shown here. <a href="${pdf}" target="_blank" rel="noopener">View the PDF</a> or <a href="${pdf}" download="${download}">download it</a>.`;
 }
 
-// Notes which point of the pages sits mid-screen, as fractions of the page area.
+// Notes which point of the pages sits mid-screen, as fractions of the page area, and whether the zoom bar is stuck to the top.
 function scrollAnchor() {
 	const rect = box.getBoundingClientRect();
-	return { x: (box.scrollLeft + box.clientWidth / 2) / box.scrollWidth, y: (innerHeight / 2 - rect.top) / rect.height };
+	const stuck = zoomBar.parentNode.getBoundingClientRect().top < parseFloat(getComputedStyle(zoomBar).top);
+	return { x: (box.scrollLeft + box.clientWidth / 2) / box.scrollWidth, y: (innerHeight / 2 - rect.top) / rect.height, stuck };
 }
 
 // Puts that point back mid-screen after a resize; roughly, since the padding does not scale.
-function restoreScroll({ x, y }) {
+// Scrolling the page would move an unstuck zoom bar away from the pointer, so then only the sideways position is kept.
+function restoreScroll({ x, y, stuck }) {
 	box.scrollLeft = x * box.scrollWidth - box.clientWidth / 2;
-	if (y < 0 || y > 1) return;
+	if (!stuck || y < 0 || y > 1) return;
 	const rect = box.getBoundingClientRect();
 	scrollBy(0, rect.top + y * rect.height - innerHeight / 2);
 }
@@ -90,7 +93,7 @@ async function drawPages() {
 		const viewport = page.getViewport({ scale: canvas.width / sizes[i].base.width });
 		const ctx = canvas.getContext('2d');
 		// The text layer shows the letters, so the canvas keeps only rules, bullets and images.
-		// PDF.js paints this CV's Type1 fonts with fillText; its one Type3 font (bullets) is drawn as paths and stays.
+		// PDF.js paints embedded fonts with fillText; Type3 fonts (LaTeX's bullets) are drawn as paths and stay.
 		ctx.fillText = ctx.strokeText = () => {};
 		const layer = layers[i].cloneNode();
 		const cssViewport = page.getViewport({ scale: width / sizes[i].base.width });
@@ -112,25 +115,31 @@ async function drawPages() {
 }
 
 // TextLayer stretches each run with scaleX to its width in the PDF, measured in the regular face.
-// Bold, italic and small-caps runs show in that face of the body font, so their scaleX is measured
-// again in it. A run that would stretch by more than 15% (small caps, math italic) is spaced out to
-// its width instead, since stretched letters look distorted.
+// Bold, italic and small-caps runs (judged from the font's name, see cvfonts.mjs) show in that face of
+// the body font, so their scaleX is measured again in it. A run that would stretch by more than 15%
+// (small caps, math italic) is spaced out to its width instead, since stretched letters look distorted.
 function fitRuns(page, textContent, divs) {
 	// textDivs holds one entry per text item, in order, including empty ones it never attaches.
 	textContent.items.filter((item) => item.str !== undefined).forEach((item, i) => {
 		const div = divs[i];
-		const face = TEX_FACES.find(([pattern]) => pattern.test(page.commonObjs.get(item.fontName).name));
-		if (face) div.style[face[1]] = face[2];
+		const font = page.commonObjs.get(item.fontName);
+		// Type3 glyphs stay drawn on the canvas, so their text is only there to select and find.
+		if (font.isType3Font) {
+			div.style.color = 'transparent';
+			return;
+		}
+		const face = cvFace(font.name);
+		Object.assign(div.style, face);
 		// TextLayer leaves single characters unscaled.
 		if (!div.style.transform.includes('scaleX')) return;
 		// Measured at 100px, so the ratio holds at every zoom.
-		measureCtx.font = `${face?.[2] ?? ''} 100px ${cvFont}`;
+		measureCtx.font = `${face.fontStyle ?? ''} ${face.fontVariant ?? ''} ${face.fontWeight ?? ''} 100px ${cvFont}`;
 		const width = measureCtx.measureText(item.str).width / 100;
 		const scaleX = item.width / Math.hypot(item.transform[2], item.transform[3]) / width;
 		const tracked = scaleX > MAX_STRETCH;
 		if (tracked) div.style.letterSpacing = `${((scaleX - 1) * width) / item.str.length}em`;
 		// Regular runs within range keep the scaleX TextLayer computed.
-		if (face || tracked) div.style.transform = div.style.transform.replace(/scaleX\([^)]*\)/, `scaleX(${tracked ? 1 : scaleX})`);
+		if (Object.keys(face).length > 0 || tracked) div.style.transform = div.style.transform.replace(/scaleX\([^)]*\)/, `scaleX(${tracked ? 1 : scaleX})`);
 	});
 }
 
@@ -179,7 +188,7 @@ zoomBar.addEventListener('click', (event) => {
 
 // Loads PDF.js only when the CV tab first opens, then draws every page of the CV.
 async function renderCv() {
-	status.textContent = 'Loading CV pages...';
+	status.textContent = 'Loading CV pages…';
 	try {
 		const pdfjs = await import(`${PDFJS}/pdf.min.mjs`);
 		({ TextLayer } = pdfjs);
@@ -208,6 +217,7 @@ async function renderCv() {
 		watchPixelRatio();
 		// TextLayer measures with the body font, so it must be loaded first.
 		await document.fonts.ready;
+		cvReady = true;
 		await drawPages();
 	} catch {
 		showFallback();
@@ -231,7 +241,7 @@ function showPane(id) {
 	if (id === 'cv' && !cvRequested) {
 		cvRequested = true;
 		renderCv();
-	} else if (id === 'cv' && cvPages.length > 0) {
+	} else if (id === 'cv' && cvReady) {
 		// The window may have been resized while another tab was showing.
 		scheduleDraw();
 	}
@@ -249,11 +259,18 @@ document.querySelector('nav').addEventListener('click', (event) => {
 	history.pushState(null, '', link.pathname);
 	showPane(tabForPath(link.pathname));
 	scrollTo(0, 0);
+	// A keyboard press (a click with no pointer, detail 0) moves focus to the new tab's heading, which screen readers announce.
+	if (event.detail === 0) {
+		const heading = document.querySelector(`#${tabForPath(link.pathname)} h1`);
+		heading.tabIndex = -1;
+		heading.focus({ preventScroll: true });
+	}
 });
 
 window.addEventListener('popstate', (event) => {
 	const id = tabForPath(location.pathname);
-	if (!id) return;
+	// Back or Forward onto a URL with no tab (a 404): reload so the server shows its not-found page.
+	if (!id) return location.reload();
 	showPane(id);
 	// A fragment link (#something) also fires popstate; leave its jump to the browser.
 	if (!location.hash) scrollTo(0, event.state?.scrollY ?? 0);
