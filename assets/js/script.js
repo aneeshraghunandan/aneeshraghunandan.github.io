@@ -1,31 +1,18 @@
-$(document).ready(function() {
+const panes = Array.from(document.querySelectorAll('#content > div'));
+const links = Array.from(document.querySelectorAll('nav a'));
 
-	var $this,
-		folder = 'resources/img/';
-
-	$('nav').delegate('a', 'click', function() {
-		window.location.hash = $(this).attr("href");
-		return false;
+function showPane() {
+	let id = location.hash.slice(1);
+	// Unknown or malformed hashes fall back to About instead of blanking the page.
+	if (!panes.some((pane) => pane.id === id)) id = 'about';
+	panes.forEach((pane) => { pane.style.display = pane.id === id ? '' : 'none'; });
+	links.forEach((link) => {
+		const isActive = link.getAttribute('href') === `#${id}`;
+		link.parentNode.classList.toggle('active', isActive);
+		if (isActive) link.setAttribute('aria-current', 'page');
+		else link.removeAttribute('aria-current');
 	});
+}
 
-	$(window).bind('hashchange', function() {
-
-		if(!$('#content > div').is(':animated')) {
-
-			newHash = (window.location.hash == '') ? '#about' : window.location.hash;
-
-			if(newHash != $('nav a.active').attr('href')) {
-
-				$('#content > div').hide();
-				$(newHash).show();
-
-				$('nav li').removeClass('active');
-				$('nav a[href=' + newHash + ']').parent('li').addClass('active');
-
-			}
-
-		}
-
-	}).trigger('hashchange');
-
-});
+window.addEventListener('hashchange', showPane);
+showPane();
