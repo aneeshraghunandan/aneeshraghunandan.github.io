@@ -1,4 +1,6 @@
-// Renders index.html from validated site.json content. Fields ending in _html are trusted inline HTML; everything else is escaped.
+// Renders each page's HTML from validated site.json content. Fields ending in _html are trusted inline HTML; everything else is escaped.
+
+import { TABS, tabTitle } from './tabs.mjs';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
@@ -31,11 +33,11 @@ function renderWorkingPaper(paper) {
 	return `\t\t\t\t\t\t\t<h2 class="article-header">${renderTitle(paper)}</h2>${renderNotes([...status, ...(paper.notes_html ?? [])])}`;
 }
 
-function renderAbout(site) {
+function renderAbout(site, attrs) {
 	const [user, domain] = site.email.split('@');
-	return `\t\t\t\t\t<div id="about">
+	return `\t\t\t\t\t<div id="about"${attrs}>
 \t\t\t\t\t\t<div class="picture-and-label">
-\t\t\t\t\t\t\t<div class="picture-not-label"><img src="${esc(site.photo)}" width="360" height="360" alt="${esc(site.name.first)} Profile Picture"></div>
+\t\t\t\t\t\t\t<div class="picture-not-label"><img src="/${esc(site.photo)}" width="360" height="360" alt="${esc(site.name.first)} Profile Picture"></div>
 \t\t\t\t\t\t\t<div class="label-not-picture">
 \t\t\t\t\t\t\t\t<h1><span>${esc(site.name.first)}</span> ${esc(site.name.last)}</h1>
 \t\t\t\t\t\t\t</div>
@@ -55,8 +57,8 @@ ${site.about_html.map((html) => `\t\t\t\t\t\t<p>${html}</p>`).join('\n')}
 \t\t\t\t\t</div>`;
 }
 
-function renderResearch(site) {
-	return `\t\t\t\t\t<div id="research">
+function renderResearch(site, attrs) {
+	return `\t\t\t\t\t<div id="research"${attrs}>
 \t\t\t\t\t\t<div>
 \t\t\t\t\t\t\t<h1>Interests</h1>
 \t\t\t\t\t\t\t<p>${esc(site.interests)}</p>
@@ -76,10 +78,10 @@ function monthYear(updated) {
 	return new Date(Date.UTC(year, month - 1)).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
-function renderCv(site, cvUrl) {
+function renderCv(site, cvUrl, attrs) {
 	const pdf = esc(cvUrl);
 	const downloadName = esc(cvUrl.split('/').pop().replace(/\.pdf$/, `_${site.cv.updated}.pdf`));
-	return `\t\t\t\t\t<div id="cv">
+	return `\t\t\t\t\t<div id="cv"${attrs}>
 \t\t\t\t\t\t<div class="cv-card">
 \t\t\t\t\t\t\t<div>
 \t\t\t\t\t\t\t\t<h1>Curriculum Vitae</h1>
@@ -107,17 +109,36 @@ function renderCv(site, cvUrl) {
 \t\t\t\t\t</div>`;
 }
 
-/** Returns the full index.html. `assets` holds the css/js/favicon/cv URLs. */
-export function renderPage(site, assets) {
-	const fullName = esc(`${site.name.first} ${site.name.last}`);
+function renderNav(active, name) {
+	return TABS.map(({ id, path, label }) => {
+		const current = id === active ? ' aria-current="page"' : '';
+		return `\t\t\t\t\t\t<li${id === active ? ' class="active"' : ''}><a href="${path}" data-title="${esc(tabTitle(id, name))}"${current}>${label}</a></li>`;
+	}).join('\n');
+}
+
+/**
+ * Returns the full HTML for one page: `page` is a tab id from TABS, shown as the active tab, or
+ * 'not-found' for 404.html (About, with a note). `assets` holds the origin and css/js/favicon/cv URLs.
+ */
+export function renderPage(site, assets, page) {
+	const name = `${site.name.first} ${site.name.last}`;
+	const fullName = esc(name);
+	const notFound = page === 'not-found';
+	const active = notFound ? 'about' : page;
+	const tab = TABS.find((t) => t.id === active);
+	if (!tab) throw new Error(`renderPage: unknown page "${page}"`);
+	const attrs = (id) => (id === active ? '' : ' hidden');
+	const title = notFound ? `Page not found · ${name}` : tabTitle(active, name);
+	const head = notFound ? '' : `\n\t\t<link rel="canonical" href="${esc(assets.origin + tab.path)}">`;
+	const note = notFound ? '\n\t\t\t\t\t<p class="not-found" role="alert">Page not found. Here is the About page instead.</p>' : '';
 	return `<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>${fullName}</title>
+		<title>${esc(title)}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="${fullName} Profile Page">
-		<meta name="author" content="${fullName}">
+		<meta name="author" content="${fullName}">${head}
 		<link rel="shortcut icon" href="${esc(assets.favicon)}">
 		<link rel="stylesheet" href="${esc(assets.css)}">
 		<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fee90e9283e944498cf8e6d19bdf5bcc"}'></script><!-- End Cloudflare Web Analytics -->
@@ -127,17 +148,15 @@ export function renderPage(site, assets) {
 			<header class="clearfix">
 				<nav>
 					<ul class="clearfix">
-						<li><a href="#about">About</a></li>
-						<li><a href="#research">Research</a></li>
-						<li><a href="#cv">CV</a></li>
+${renderNav(active, name)}
 					</ul>
 				</nav>
 			</header>
 			<main id="container">
-				<div id="content">
-${renderAbout(site)}
-${renderResearch(site)}
-${renderCv(site, assets.cv)}
+				<div id="content">${note}
+${renderAbout(site, attrs('about'))}
+${renderResearch(site, attrs('research'))}
+${renderCv(site, assets.cv, attrs('cv'))}
 				</div>
 			</main>
 			<footer>

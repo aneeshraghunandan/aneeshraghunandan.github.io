@@ -1,3 +1,5 @@
+import { pathForHash, tabForPath } from '../../src/tabs.mjs';
+
 const panes = Array.from(document.querySelectorAll('#content > div'));
 const links = Array.from(document.querySelectorAll('nav a'));
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149';
@@ -212,16 +214,19 @@ async function renderCv() {
 	}
 }
 
-function showPane() {
-	let id = location.hash.slice(1);
-	// Unknown or malformed hashes fall back to About instead of blanking the page.
-	if (!panes.some((pane) => pane.id === id)) id = 'about';
-	panes.forEach((pane) => { pane.style.display = pane.id === id ? '' : 'none'; });
+// Shows one tab's pane and marks its nav link; the build renders the same state into each page.
+function showPane(id) {
+	document.querySelector('.not-found')?.remove();
+	panes.forEach((pane) => { pane.hidden = pane.id !== id; });
 	links.forEach((link) => {
-		const isActive = link.getAttribute('href') === `#${id}`;
+		const isActive = tabForPath(link.pathname) === id;
 		link.parentNode.classList.toggle('active', isActive);
-		if (isActive) link.setAttribute('aria-current', 'page');
-		else link.removeAttribute('aria-current');
+		if (isActive) {
+			link.setAttribute('aria-current', 'page');
+			document.title = link.dataset.title;
+		} else {
+			link.removeAttribute('aria-current');
+		}
 	});
 	if (id === 'cv' && !cvRequested) {
 		cvRequested = true;
@@ -232,5 +237,40 @@ function showPane() {
 	}
 }
 
-window.addEventListener('hashchange', showPane);
-showPane();
+// Real URLs per tab, switched in place with pushState so Cloudflare's beacon counts each tab as a pageview.
+document.querySelector('nav').addEventListener('click', (event) => {
+	const link = event.target.closest('a');
+	// Leave new-tab/window clicks and targeted links to the browser.
+	if (!link || link.target || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+	event.preventDefault();
+	if (link.pathname === location.pathname) return;
+	// Remember where this entry was scrolled, for Back.
+	history.replaceState({ scrollY }, '');
+	history.pushState(null, '', link.pathname);
+	showPane(tabForPath(link.pathname));
+	scrollTo(0, 0);
+});
+
+window.addEventListener('popstate', (event) => {
+	const id = tabForPath(location.pathname);
+	if (!id) return;
+	showPane(id);
+	// A fragment link (#something) also fires popstate; leave its jump to the browser.
+	if (!location.hash) scrollTo(0, event.state?.scrollY ?? 0);
+});
+
+// Old #about/#research/#cv links move to their path; any other hash is left alone.
+function followHash() {
+	const path = pathForHash(location.hash);
+	if (!path) return false;
+	history.replaceState(null, '', path);
+	showPane(tabForPath(path));
+	// The browser jumped to the pane with that id; the tab starts at the top instead.
+	scrollTo(0, 0);
+	return true;
+}
+
+window.addEventListener('hashchange', followHash);
+// The 404 page's path matches no tab; it keeps the About pane it was built with.
+const initial = tabForPath(location.pathname);
+if (!followHash() && initial) showPane(initial);

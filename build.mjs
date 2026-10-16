@@ -1,9 +1,10 @@
-// Builds the site into _site/: renders index.html from content/site.json, minifies CSS/JS with hashed names, copies static files.
+// Builds the site into _site/: renders a page per tab (index.html, research/, cv/) and 404.html from content/site.json, minifies CSS/JS with hashed names, copies static files.
 import { createHash } from 'node:crypto';
 import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { transform } from 'esbuild';
+import { build as bundle, transform } from 'esbuild';
 import { validateSite } from './src/content.mjs';
+import { TABS } from './src/tabs.mjs';
 import { renderPage } from './src/template.mjs';
 
 const OUT = '_site';
@@ -31,13 +32,19 @@ async function readSite() {
 	return site;
 }
 
-// Writes `code` to dir/name.<hash>.ext and returns its site-relative URL.
+// Writes `code` to dir/name.<hash>.ext and returns its root-absolute URL.
 async function writeHashed(dir, name, ext, code) {
 	const hash = createHash('sha256').update(code).digest('hex').slice(0, 10);
 	const url = `${dir}/${name}.${hash}.${ext}`;
 	await mkdir(join(OUT, dir), { recursive: true });
 	await writeFile(join(OUT, url), code);
-	return url;
+	return `/${url}`;
+}
+
+// script.js imports src/tabs.mjs, so it is bundled into one classic script.
+async function bundleJs(entry) {
+	const { outputFiles } = await bundle({ entryPoints: [entry], bundle: true, format: 'iife', minify: true, write: false, logLevel: 'warning' });
+	return outputFiles[0].text;
 }
 
 async function minify(files, loader) {
@@ -56,15 +63,20 @@ async function build() {
 	await rm(OUT, { recursive: true, force: true });
 	const assets = {
 		css: await writeHashed('assets/css', 'site', 'css', await minify(CSS_FILES, 'css')),
-		js: await writeHashed('assets/js', 'script', 'js', await minify([JS_FILE], 'js')),
-		favicon: 'assets/favicon.png',
+		js: await writeHashed('assets/js', 'script', 'js', await bundleJs(JS_FILE)),
+		favicon: '/assets/favicon.png',
 		cv: CV_URL,
+		origin: `https://${(await readFile('CNAME', 'utf8')).trim()}`,
 	};
 	await Promise.all(STATIC_FILES.map((file) => copyTo(file, file)));
 	// After STATIC_FILES, since the photo may sit inside assets/img and parallel copies of one file can race.
 	await Promise.all([copyTo(site.photo, site.photo), copyTo(site.cv.file, CV_URL)]);
-	await writeFile(join(OUT, 'index.html'), renderPage(site, assets));
-	console.log(`Built ${OUT}/ (index.html, ${assets.css}, ${assets.js})`);
+	const pages = [...TABS.map(({ id, path }) => [id, `${path}index.html`]), ['not-found', '/404.html']];
+	await Promise.all(pages.map(async ([page, file]) => {
+		await mkdir(dirname(join(OUT, file)), { recursive: true });
+		await writeFile(join(OUT, file), renderPage(site, assets, page));
+	}));
+	console.log(`Built ${OUT}/ (${pages.map(([, file]) => file.slice(1)).join(', ')}, ${assets.css}, ${assets.js})`);
 }
 
 build().catch((error) => {
