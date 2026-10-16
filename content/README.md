@@ -46,6 +46,11 @@ The site always serves the CV at `/Aneesh_Raghunandan_CV.pdf`, so links to it ke
 working. `updated` sets the "Updated August 2026" line on the CV tab and the
 downloaded file name (`Aneesh_Raghunandan_CV_2026-08.pdf`).
 
+## Changing the photo
+
+Upload the new photo over `content/photo.jpg` (keep that file name). A square image at
+least 360 pixels wide works best; the build makes the smaller sizes.
+
 ## Building locally
 
 Needs Node 22 or newer. `npm ci` once, then `npm start` builds into `_site/` and

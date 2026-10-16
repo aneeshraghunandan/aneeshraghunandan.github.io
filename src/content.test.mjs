@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { validateSite } from './content.mjs';
-import { escapeHtml, renderPage } from './template.mjs';
+import { escapeHtml, photoWidths, renderPage } from './template.mjs';
 
 const site = JSON.parse(await readFile(new URL('../content/site.json', import.meta.url), 'utf8'));
-const assets = { styles: 'p{}', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com' };
+const photo = [180, 270, 360].map((width) => ({ url: `/assets/img/photo-${width}.abc.webp`, width, height: width }));
+const assets = { styles: 'p{}', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com', photo };
 
 test('the committed site.json is valid', () => {
 	validateSite(site);
@@ -23,10 +24,19 @@ test('a misspelled field is rejected', () => {
 	assert.throws(() => validateSite(broken), /working_papers\[0\]\.coauthor is not a known field/);
 });
 
-test('photo files must name their width', () => {
-	assert.throws(() => validateSite({ ...site, photo: ['assets/img/me.webp'] }), /photo\[0\] must end in -<width/);
+test('photo sizes never upscale the source', () => {
+	assert.deepEqual(photoWidths(1000), [180, 270, 360]);
+	assert.deepEqual(photoWidths(360), [180, 270, 360]);
+	assert.deepEqual(photoWidths(300), [180, 270, 300]);
+	assert.deepEqual(photoWidths(100), [100]);
+});
+
+test('the photo renders as a srcset sized from the largest file', () => {
+	assert.throws(() => validateSite({ ...site, photo: ['content/photo.jpg'] }), /photo must be a non-empty text/);
 	const html = renderPage(site, assets, 'about');
-	assert.ok(html.includes('srcset="/assets/img/aneeshprofile-180.webp 180w, /assets/img/aneeshprofile-270.webp 270w, /assets/img/aneeshprofile-360.webp 360w"'));
+	assert.ok(html.includes('srcset="/assets/img/photo-180.abc.webp 180w, /assets/img/photo-270.abc.webp 270w, /assets/img/photo-360.abc.webp 360w"'));
+	assert.ok(html.includes('src="/assets/img/photo-360.abc.webp"'));
+	assert.ok(html.includes('width="360" height="360" fetchpriority="high"'));
 });
 
 test('plain fields are escaped, _html fields are not', () => {

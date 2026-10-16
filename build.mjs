@@ -3,9 +3,10 @@ import { createHash } from 'node:crypto';
 import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { build as bundle, transform } from 'esbuild';
+import sharp from 'sharp';
 import { validateSite } from './src/content.mjs';
 import { TABS } from './src/tabs.mjs';
-import { renderPage } from './src/template.mjs';
+import { photoWidths, renderPage } from './src/template.mjs';
 
 const OUT = '_site';
 // Order matters: the @font-face rules come first.
@@ -24,7 +25,7 @@ async function readSite() {
 		throw new Error(`content/site.json is not valid JSON: ${error.message}`);
 	}
 	validateSite(site);
-	for (const [field, file] of [...site.photo.map((file, i) => [`photo[${i}]`, file]), ['cv.file', site.cv.file]]) {
+	for (const [field, file] of [['photo', site.photo], ['cv.file', site.cv.file]]) {
 		await access(file).catch(() => {
 			throw new Error(`content/site.json: ${field} points to "${file}", which does not exist`);
 		});
@@ -53,6 +54,19 @@ async function minify(files, loader) {
 	return code;
 }
 
+// Writes the photo as hashed WebP files at photoWidths() and returns [{ url, width, height }], smallest first.
+async function buildPhoto(file) {
+	// autoOrient applies EXIF rotation, so phone photos come out upright.
+	const metadata = await sharp(file, { autoOrient: true }).metadata().catch((error) => {
+		throw new Error(`content/site.json: photo "${file}" is not a readable image (${error.message})`);
+	});
+	const { width, height } = metadata.autoOrient;
+	return Promise.all(photoWidths(width).map(async (size) => {
+		const webp = await sharp(file, { autoOrient: true }).resize(size).webp().toBuffer();
+		return { url: await writeHashed('assets/img', `photo-${size}`, 'webp', webp), width: size, height: Math.round((height * size) / width) };
+	}));
+}
+
 async function copyTo(src, dest) {
 	await mkdir(dirname(join(OUT, dest)), { recursive: true });
 	await cp(src, join(OUT, dest), { recursive: true });
@@ -70,8 +84,8 @@ async function build() {
 		origin: `https://${(await readFile('CNAME', 'utf8')).trim()}`,
 	};
 	await Promise.all(STATIC_FILES.map((file) => copyTo(file, file)));
-	// After STATIC_FILES, since the photo may sit inside assets/img and parallel copies of one file can race.
-	await Promise.all([...site.photo.map((file) => copyTo(file, file)), copyTo(site.cv.file, CV_URL)]);
+	// After STATIC_FILES, which copies assets/img, so the copy and the photo writes cannot race.
+	[assets.photo] = await Promise.all([buildPhoto(site.photo), copyTo(site.cv.file, CV_URL)]);
 	const pages = [...TABS.map(({ id, path }) => [id, `${path}index.html`]), ['not-found', '/404.html']];
 	await Promise.all(pages.map(async ([page, file]) => {
 		await mkdir(dirname(join(OUT, file)), { recursive: true });

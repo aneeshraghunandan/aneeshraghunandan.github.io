@@ -33,19 +33,26 @@ function renderWorkingPaper(paper) {
 	return `\t\t\t\t\t\t\t<h2 class="article-header">${renderTitle(paper)}</h2>${renderNotes([...status, ...(paper.notes_html ?? [])])}`;
 }
 
-// Shown at min(180px, 40vw) by main.css; srcset lets each screen fetch the smallest file that stays sharp.
-function renderPhoto(files, isActive) {
-	const sized = files.map((file) => ({ url: `/${esc(file)}`, width: Number(file.match(/-(\d+)\.\w+$/)[1]) })).sort((a, b) => a.width - b.width);
-	const largest = sized.at(-1);
-	const srcset = sized.map(({ url, width }) => `${url} ${width}w`).join(', ');
-	return `<img src="${largest.url}" srcset="${srcset}" sizes="(max-width: 450px) 40vw, 180px" width="${largest.width}" height="${largest.width}"${isActive ? ' fetchpriority="high"' : ''}`;
+// Shown at min(180px, 40vw) by main.css, so 1x, 1.5x and 2x of 180px cover common screens.
+const PHOTO_WIDTHS = [180, 270, 360];
+
+/** The widths to generate from a source `sourceWidth` pixels wide: never wider than the source. */
+export function photoWidths(sourceWidth) {
+	return [...new Set(PHOTO_WIDTHS.map((width) => Math.min(width, sourceWidth)))];
 }
 
-function renderAbout(site, attrs) {
+// `sized` is [{ url, width, height }] from smallest to largest; srcset lets each screen fetch the smallest file that stays sharp.
+function renderPhoto(sized, isActive) {
+	const largest = sized.at(-1);
+	const srcset = sized.map(({ url, width }) => `${esc(url)} ${width}w`).join(', ');
+	return `<img src="${esc(largest.url)}" srcset="${srcset}" sizes="(max-width: 450px) 40vw, 180px" width="${largest.width}" height="${largest.height}"${isActive ? ' fetchpriority="high"' : ''}`;
+}
+
+function renderAbout(site, photo, attrs) {
 	const [user, domain] = site.email.split('@');
 	return `\t\t\t\t\t<div id="about"${attrs}>
 \t\t\t\t\t\t<div class="picture-and-label">
-\t\t\t\t\t\t\t<div class="picture-not-label">${renderPhoto(site.photo, !attrs)} alt="${esc(site.name.first)} Profile Picture"></div>
+\t\t\t\t\t\t\t<div class="picture-not-label">${renderPhoto(photo, !attrs)} alt="${esc(site.name.first)} Profile Picture"></div>
 \t\t\t\t\t\t\t<div class="label-not-picture">
 \t\t\t\t\t\t\t\t<h1><span>${esc(site.name.first)}</span> ${esc(site.name.last)}</h1>
 \t\t\t\t\t\t\t</div>
@@ -126,7 +133,7 @@ function renderNav(active, name) {
 
 /**
  * Returns the full HTML for one page: `page` is a tab id from TABS, shown as the active tab, or
- * 'not-found' for 404.html (About, with a note). `assets` holds the origin, the minified CSS and the js/favicon/cv URLs.
+ * 'not-found' for 404.html (About, with a note). `assets` holds the origin, the minified CSS, the js/favicon/cv URLs and the photo sizes.
  */
 export function renderPage(site, assets, page) {
 	const name = `${site.name.first} ${site.name.last}`;
@@ -163,7 +170,7 @@ ${renderNav(active, name)}
 			</header>
 			<main id="container">
 				<div id="content">${note}
-${renderAbout(site, attrs('about'))}
+${renderAbout(site, assets.photo, attrs('about'))}
 ${renderResearch(site, attrs('research'))}
 ${renderCv(site, assets.cv, attrs('cv'))}
 				</div>

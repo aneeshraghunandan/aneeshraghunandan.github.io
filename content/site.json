@@ -7,7 +7,7 @@
     "Evans Hall",
     "165 Whitney Ave,New Haven, CT 06511"
   ],
-  "photo": ["assets/img/aneeshprofile-180.webp", "assets/img/aneeshprofile-270.webp", "assets/img/aneeshprofile-360.webp"],
+  "photo": "content/photo.jpg",
   "about_html": [
     "I'm an Associate Professor of Accounting at Yale School of Management. Prior to joining Yale, I spent seven years on the faculty at the London School of Economics. I received a PhD in Accounting from Stanford University in 2017 and my undergraduate degrees from Yale in 2011.",
     "My research interests span non-financial misconduct, ESG issues, and political connections (especially subsidies)",
