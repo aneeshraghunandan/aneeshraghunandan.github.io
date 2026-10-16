@@ -238,24 +238,64 @@ ul {
 	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
 }
+/* Wider than the 900px column so the CV's 10pt text is readable; a 16px gutter each side. */
+.cv-viewer {
+	--cv-viewer-width: min(1100px, 100vw - 2 * var(--space-md));
+	width: var(--cv-viewer-width);
+	margin: var(--space-lg) calc((100% - var(--cv-viewer-width)) / 2) 0;
+}
+.cv-zoom {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-sm);
+}
+.cv-zoom[hidden] {
+	display: none;
+}
+/* Button elements need the link colour and a reset that a.button gets for free. */
+.cv-zoom__button {
+	justify-content: center;
+	min-width: 44px;
+	background: none;
+	color: var(--color-accent);
+	cursor: pointer;
+}
+.cv-zoom__button:hover {
+	color: var(--color-accent-hover);
+}
+.cv-zoom__button[aria-disabled="true"] {
+	border-color: var(--color-border);
+	color: var(--color-muted);
+	cursor: default;
+}
+.cv-zoom__level {
+	min-width: 4ch;
+	font-family: var(--font-heading);
+	font-size: var(--font-size-lg);
+	text-align: right;
+}
+/* Wide zooms scroll sideways in here; the page keeps the vertical scroll. */
 .cv-pages {
-	margin-top: var(--space-lg);
+	overflow-x: auto;
 	padding: var(--space-md);
 	background-color: #f2f2f2;
 	border-radius: 4px;
 }
-/* Backing store is sized in script.js for the screen's pixel ratio; CSS fits it to the column. */
-.cv-pages canvas {
-	display: block;
-	width: 100%;
-	max-width: 800px;
-	height: auto;
+/* One PDF page; the shadow sits here so the canvas itself is never composited or resampled. */
+.cv-pages__sheet {
+	width: fit-content;
 	margin: 0 auto var(--space-md);
 	background-color: white;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
 }
-.cv-pages canvas:last-child {
+.cv-pages__sheet:last-child {
 	margin-bottom: 0;
+}
+/* script.js sets whole-pixel CSS sizes and a backing store of that size × devicePixelRatio. */
+.cv-pages canvas {
+	display: block;
 }
 .cv-pages p {
 	padding-bottom: 0;

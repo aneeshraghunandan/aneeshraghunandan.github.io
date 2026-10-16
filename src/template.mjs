@@ -91,9 +91,18 @@ function renderCv(site, cvUrl) {
 \t\t\t\t\t\t\t\t<a class="button" href="${pdf}" download="${downloadName}">Download</a>
 \t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t</div>
-\t\t\t\t\t\t<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
-\t\t\t\t\t\t<div class="cv-pages" id="cv-pages" data-pdf="${pdf}" data-download="${downloadName}">
-\t\t\t\t\t\t\t<p class="cv-pages__status">Loading CV pages...</p>
+\t\t\t\t\t\t<div class="cv-viewer">
+\t\t\t\t\t\t\t<!-- script.js shows the zoom bar once the PDF loads. -->
+\t\t\t\t\t\t\t<div class="cv-zoom" id="cv-zoom" role="group" aria-label="CV zoom" hidden>
+\t\t\t\t\t\t\t\t<button type="button" class="button cv-zoom__button" data-zoom="-1" aria-label="Zoom out">&minus;</button>
+\t\t\t\t\t\t\t\t<button type="button" class="button cv-zoom__button" data-zoom="0" aria-label="Fit to width">Fit</button>
+\t\t\t\t\t\t\t\t<button type="button" class="button cv-zoom__button" data-zoom="1" aria-label="Zoom in">+</button>
+\t\t\t\t\t\t\t\t<span class="cv-zoom__level" aria-live="polite">100%</span>
+\t\t\t\t\t\t\t</div>
+\t\t\t\t\t\t\t<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
+\t\t\t\t\t\t\t<div class="cv-pages" id="cv-pages" data-pdf="${pdf}" data-download="${downloadName}">
+\t\t\t\t\t\t\t\t<p class="cv-pages__status">Loading CV pages...</p>
+\t\t\t\t\t\t\t</div>
 \t\t\t\t\t\t</div>
 \t\t\t\t\t</div>`;
 }
