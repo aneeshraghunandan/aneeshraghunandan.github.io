@@ -166,16 +166,19 @@
 						</div>
 					</div>
 					<div id="cv">
-						<div class="overflow-container">
-							<p>
-								My CV is below:
-							</p>
-							<p><a href="assets/cv.pdf">Download CV (PDF)</a></p>
-							<object class="cv-embed" data="assets/cv.pdf" type="application/pdf" width="100%" height="80%">
-								<iframe src="assets/cv.pdf" width="100%" height="80%" style="border: none;">
-									<p><b>Please <a href="assets/cv.pdf" target="_blank">Download</a> PDF to View</b>: This browser does not support PDFs.</p>
-								</iframe>
-							</object>
+						<div class="cv-card">
+							<div>
+								<h1>Curriculum Vitae</h1>
+								<p>PDF. Open it in a new tab or save a copy.</p>
+							</div>
+							<div class="cv-card__actions">
+								<a class="button button--primary" href="assets/cv.pdf" target="_blank" rel="noopener">View</a>
+								<a class="button" href="assets/cv.pdf" download>Download</a>
+							</div>
+						</div>
+						<!-- script.js renders the PDF pages here with PDF.js the first time this tab opens. -->
+						<div class="cv-pages" id="cv-pages">
+							<p class="cv-pages__status">Loading CV pages...</p>
 						</div>
 					</div>
 				</div>
