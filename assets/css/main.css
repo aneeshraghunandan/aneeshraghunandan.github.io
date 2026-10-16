@@ -131,7 +131,6 @@ ul {
 	color: #767676;
 	font-weight: normal;
 	display: flow-root;
-	overflow-wrap: anywhere;
 }
 h2.article-header > a, h2.article-header > a:active, h2.article-header > a:visited, h2.article-header {
 	font-weight: normal;
