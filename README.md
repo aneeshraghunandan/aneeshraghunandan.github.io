@@ -38,11 +38,21 @@ The live site keeps the previous version until the error is fixed.
 
 ## Updating the CV (PDF)
 
-1. Replace [`content/cv.pdf`](content/cv.pdf) with the new PDF, keeping the file name.
-2. In `content/site.json`, set `cv.updated` to the year and month, e.g. `"2026-08"`.
+Replace [`content/cv.pdf`](content/cv.pdf) with the new PDF, keeping the file name.
+
+The "Updated" month comes from the date stored inside the PDF: its modification
+date, or its creation date if it has none. LaTeX, Word and most PDF exporters set
+this when the file is made. If the month shown is wrong, or the build fails because
+the PDF has no date, override it in [`content/site.json`](content/site.json):
+
+```json
+"cv": { "file": "content/cv.pdf", "updated": "2026-08" }
+```
+
+Remove `updated` again with the next CV upload, or it keeps overriding the PDF's date.
 
 The site always serves the CV at `/Aneesh_Raghunandan_CV.pdf`, so links to it keep
-working. `updated` sets the "Updated August 2026" line on the CV tab and the
+working. The month sets the "Updated August 2026" line on the CV tab and the
 downloaded file name (`Aneesh_Raghunandan_CV_2026-08.pdf`).
 
 ## Changing the photo

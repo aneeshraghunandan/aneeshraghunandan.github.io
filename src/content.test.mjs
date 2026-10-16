@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
-import { validateSite } from './content.mjs';
+import { pdfMonth, validateSite } from './content.mjs';
 import { escapeHtml, photoWidths, renderPage } from './template.mjs';
 
 const site = JSON.parse(await readFile(new URL('../content/site.json', import.meta.url), 'utf8'));
+// build.mjs fills cv.updated from the PDF when site.json leaves it out.
+site.cv.updated ??= '2026-08';
 const photo = [180, 270, 360].map((width) => ({ url: `/assets/img/photo-${width}.abc.webp`, width, height: width }));
 const assets = { styles: 'p{}', js: '/a.js', favicon: '/f.png', cv: '/Aneesh_Raghunandan_CV.pdf', origin: 'https://example.com', photo };
 
@@ -48,9 +50,19 @@ test('plain fields are escaped, _html fields are not', () => {
 	assert.equal(escapeHtml(`<'&">`), '&lt;&#39;&amp;&quot;&gt;');
 });
 
+test('the CV month comes from the PDF ModDate, then CreationDate', () => {
+	assert.equal(pdfMonth(Buffer.from('/CreationDate (D:20250101) /ModDate (D:20260825165544)')), '2026-08');
+	assert.equal(pdfMonth(Buffer.from('/ModDate(D:202601) ... /ModDate (D:202603)')), '2026-03');
+	assert.equal(pdfMonth(Buffer.from('/CreationDate (D:20241105)')), '2024-11');
+	assert.equal(pdfMonth(Buffer.from('/ModDate (D:20241305)')), undefined);
+	assert.equal(pdfMonth(Buffer.from('%PDF-1.7 no info')), undefined);
+});
+
 test('cv.updated sets the dated download name and label', () => {
-	const html = renderPage(site, assets, 'cv');
-	assert.ok(html.includes(`download="Aneesh_Raghunandan_CV_${site.cv.updated}.pdf"`));
-	assert.match(html, /<p>Updated [A-Z][a-z]+ \d{4}<\/p>/);
+	const dated = { ...site, cv: { ...site.cv, updated: '2026-08' } };
+	validateSite(dated);
+	const html = renderPage(dated, assets, 'cv');
+	assert.ok(html.includes('download="Aneesh_Raghunandan_CV_2026-08.pdf"'));
+	assert.ok(html.includes('<p>Updated August 2026</p>'));
 	assert.throws(() => validateSite({ ...site, cv: { ...site.cv, updated: '2026-13' } }), /cv\.updated must be year-month/);
 });

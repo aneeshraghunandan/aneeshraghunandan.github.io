@@ -1,5 +1,6 @@
 // Checks content/site.json and throws one readable error per problem, naming the field path.
 
+const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 const PAPER_KEYS = ['title', 'url', 'coauthors', 'venue', 'volume', 'year', 'status', 'notes_html'];
 
 function fail(path, message) {
@@ -76,6 +77,18 @@ export function validateSite(site) {
 	checkPaperList(site.working_papers, 'working_papers', checkWorkingPaper);
 	checkKeys(site.cv, 'cv', ['file', 'updated']);
 	checkString(site.cv.file, 'cv.file');
-	checkString(site.cv.updated, 'cv.updated');
-	if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(site.cv.updated)) fail('cv.updated', 'must be year-month like "2026-08"');
+	// Optional: overrides the date build.mjs reads from the PDF.
+	checkString(site.cv.updated, 'cv.updated', { optional: true });
+	if (site.cv.updated !== undefined && !MONTH.test(site.cv.updated)) fail('cv.updated', 'must be year-month like "2026-08"');
+}
+
+/** Returns "YYYY-MM" from the PDF's ModDate (else CreationDate), or undefined if it has neither. */
+export function pdfMonth(bytes) {
+	const text = Buffer.from(bytes).toString('latin1');
+	for (const key of ['ModDate', 'CreationDate']) {
+		// The last match wins: an edited PDF appends a newer info dictionary.
+		const month = [...text.matchAll(new RegExp(`/${key}\\s*\\(D:(\\d{4})(\\d{2})`, 'g'))].map(([, y, m]) => `${y}-${m}`).pop();
+		if (month && MONTH.test(month)) return month;
+	}
+	return undefined;
 }
