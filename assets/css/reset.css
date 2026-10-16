@@ -200,12 +200,12 @@ a:active {
 a,
 a:active,
 a:visited {
-    color: #81b3d2;
+    color: #3b7ca5;
     font-weight: bold;
 }
 
 a:hover {
-    color: #4e88ab
+    color: #3c6883
 }
 
 ul,

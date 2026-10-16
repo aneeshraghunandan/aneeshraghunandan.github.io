@@ -31,7 +31,7 @@ nav ul li a, nav ul li a:visited {
 	font-size: 19px;
 	font-weight: normal;
 	display: block;
-	color: rgba(0, 0, 0, .35);
+	color: rgba(0, 0, 0, .6);
 	text-transform: uppercase;
 	text-decoration: none;
 	text-shadow: rgba(255, 255, 255, .70) 0 1px 0;
@@ -41,7 +41,7 @@ nav ul li.active a, nav ul li a:hover {
 	font-family: 'Yanone Kaffeesatz', Arial, sans-serif;
 	font-size: 19px;
 	font-weight: normal;
-	color: rgba(0, 0, 0, .5);
+	color: rgba(0, 0, 0, .75);
 }
 #container, #content, .overflow-container, .hide-left-content,
 .left-content, .right-content {
@@ -98,7 +98,7 @@ nav ul li.active a, nav ul li a:hover {
 	font-family: Arial, sans-serif;
 	position: relative;
 	font-size: 30px;
-	color: #ababab;
+	color: #949494;
 	font-weight: normal;
 }
 .label-not-picture span {
@@ -107,7 +107,7 @@ nav ul li.active a, nav ul li a:hover {
 .label-not-picture h2 {
 	font-family: 'HelveticaNeue', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 19px;
-	color: #6297b8;
+	color: #477c9d;
 	font-weight: normal;
 	letter-spacing: -1px;
 	margin-top: -6px;
@@ -132,7 +132,7 @@ h1 {
 }
 h2 {
 	font-size: 24px;
-	color: #808080;
+	color: #767676;
 }
 h3 {
 	font-size: 20px;
@@ -140,7 +140,7 @@ h3 {
 p, .info {
 	font-family: 'HelveticaNeue', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 14px;
-	color: #787878;
+	color: #767676;
 }
 p {
 	line-height: 20px;
@@ -157,7 +157,7 @@ p {
 	padding-bottom: 20px;
 }
 .right-content ul li {
-	color: #828282;
+	color: #767676;
 	line-height: 20px;
 }
 
@@ -174,13 +174,13 @@ ul {
 	font-size: 15px;
 }
 .label {
-	color: #a6a6a6;
+	color: #767676;
 	font-weight: bold;
 	width: 80px;
 	float: left;
 }
 .info {
-	color: #777777;
+	color: #767676;
 	font-weight: normal;
 	float: left;
 }
